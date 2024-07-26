@@ -1,0 +1,55 @@
+{
+	"graph": {
+		"canvas": {	"default_landscape": {"width": 800, "height": 195, "bgcolor": "rgb(255,255,255)", "axis": 0,
+						"axis_color": "rgb(0,0,0)", "grid": 2, "grid_color": "rgb(0,0,0)", "grid_ext_upper": 30, "grid_ext_lower": 0},
+					"default_landscape_noGrid": {"width": 800, "height": 195, "bgcolor": "rgb(255,255,255)", "axis": 0,
+						"axis_color": "rgb(0,0,0)", "grid": 0, "grid_color": "rgb(0,0,0)", "grid_ext_upper": 0, "grid_ext_lower": 0},
+					"default_landscape_noGrid_sp20": {"width": 760, "height": 195, "bgcolor": "rgb(255,255,255)", "axis": 0,
+						"axis_color": "rgb(0,0,0)", "grid": 0, "grid_color": "rgb(0,0,0)", "grid_ext_upper": 0, "grid_ext_lower": 0}
+		},
+		"objects": {
+			"hourly_temperature_landscape": {"title": "temperature", "start": 0, "end": 25, "step": 1, "basis": "hour",
+						"type": "line", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
+						"stroke-linecap": "round"},
+			"hourly_temperature_spline_landscape": {"title": "temperature", "start": 0, "end": 25, "step": 1, "basis": "hour",
+						"type": "spline", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
+						"stroke-linecap": "round"},
+			"hourly_rain_precipitation": {"title": "rain precipitation", "start": 0, "end": 25, "step": 1, "basis": "hour",
+						"type": "bar", "stroke": 15, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt"},
+			"hourly_snow_accumulation": {"title": "snow accumulation", "start": 0, "end": 25, "step": 1, "basis": "hour",
+						"type": "rect", "stroke": 1, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt", "width": 15},
+			"daily_rain_precipitation_6cols": {"title": "rain precipitation", "start": 0, "end": 6, "step": 1, "basis": "day",
+						"type": "bar", "stroke": 25, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt"},
+			"daily_snow_accumulation_6cols": {"title": "snow accumulation", "start": 0, "end": 6, "step": 1, "basis": "day",
+						"type": "rect", "stroke": 1, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt", "width": 40},
+			"daily_weather_landscape": {"title": "weather", "start": 1, "end": 6, "step": 1, "basis": "day", "type": "tile",
+						"stroke": 4, "stroke-color": "rgb(0,0,0)", "fill": "rgb(0,0,0)", "stroke-linecap": "round"},
+			"daily_weather_landscape4": {"title": "weather", "start": 1, "end": 5, "step": 1, "basis": "day", "type": "tile",
+						"stroke": 4, "stroke-color": "rgb(0,0,0)", "fill": "rgb(0,0,0)", "stroke-linecap": "round"},
+			"daily_temperature_spline_landscape": {"title": "temperature", "start": 0, "end": 6, "step": 1, "basis": "day",
+						"type": "spline", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
+						"stroke-linecap": "round"},
+			"daily_temperature_spline_landscape5": {"title": "temperature", "start": 0, "end": 5, "step": 1, "basis": "day",
+						"type": "spline", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
+						"stroke-linecap": "round"},
+			"moon_phase_landscape": {"title": "moon phase", "start": 0, "end": 6, "step": 1, "basis": "day", "type": "tile",
+						"stroke": 4, "stroke-color": "rgb(0,0,0)", "fill": "rgb(0,0,0)", "stroke-linecap": "round"},
+			"moon_phase_landscape5": {"title": "moon phase", "start": 0, "end": 5, "step": 1, "basis": "day", "type": "tile",
+						"stroke": 4, "stroke-color": "rgb(0,0,0)", "fill": "rgb(0,0,0)", "stroke-linecap": "round"}
+		},
+		"labels": {
+			"hourly_xlabel_landscape_start0": {"start": 0, "end": 25, "step": 1, "basis": "day", "font-size": 30, "stroke-color": "rgb(105,105,105)"},
+			"daily_xlabel_landscape": {"start": 1, "end": 6, "step": 1, "basis": "day", "font-size": 35, "stroke-color": "rgb(105,105,105)"},
+			"daily_xlabel_landscape4": {"start": 1, "end": 5, "step": 1, "basis": "day", "font-size": 35, "stroke-color": "rgb(105,105,105)"},
+			"daily_xlabel_landscape_start0": {"start": 0, "end": 6, "step": 1, "basis": "day", "font-size": 35, "stroke-color": "rgb(105,105,105)"},
+			"daily_xlabel_landscape5_start0": {"start": 0, "end": 5, "step": 1, "basis": "day", "font-size": 35, "stroke-color": "rgb(105,105,105)"}
+		},
+		"lines": {
+			"h_line_landscape_basic_1": {"start": 40, "end": 760, "stroke-width": 1, "stroke-color": "rgb(0,0,0)", "stroke-linecap": "butt"}
+		}
+	}
+}

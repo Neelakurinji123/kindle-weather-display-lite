@@ -1,0 +1,21 @@
+{
+    "station": {
+        "city": "Tel Aviv",
+        "timezone": "Asia/Jerusalem",
+        "encoding": "utf-8",
+        "locale": "he_IL.UTF-8",
+        "font": "Droid Sans",
+        "sunrise_and_sunset": "False",
+        "darkmode": false,
+		"api": "Tomorrow.io",
+        "lat": 32.0879122,
+        "lon": 34.7272058,
+        "units": "metric",
+        "lang": "he",
+		"in_clouds": "probability",
+		"layout": ["maintenant", "main", "daily_xlabel_landscape", "padding+10", "graph"],
+		"graph_objects": ["daily_weather_landscape"],
+		"graph_canvas": "default_landscape",		
+        "ramadhan": false
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "station": {
+        "city": "San Francisco",
+        "timezone": "America/Los_Angeles",
+        "encoding": "iso-8859-1",
+        "locale": "en_US.UTF-8",
+        "font": "Droid Sans",
+        "darkmode": false,
+		"api": "Tomorrow.io",
+        "lat": 37.7576792,
+        "lon": -122.50781175,
+        "units": "imperial",
+        "lang": "en",
+		"in_clouds": "probability",
+		"layout": ["maintenant", "main", "daily_xlabel_landscape", "padding+10", "graph"],
+		"graph_objects": ["daily_weather_landscape"],
+		"graph_canvas": "default_landscape",		
+        "ramadhan": false
+    }
+}

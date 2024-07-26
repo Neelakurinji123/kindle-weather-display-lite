@@ -1,0 +1,20 @@
+{
+    "station": {
+        "city": "HeliPark, NZ",
+        "timezone": "Pacific/Auckland",
+        "encoding": "iso-8859-1",
+        "locale": "en_US.UTF-8",
+        "font": "Droid Sans",
+		"darkmode": false,
+		"api": "Tomorrow.io",
+        "lat": -43.51,
+        "lon": 170.90,
+        "units": "metric",
+		"in_clouds": "probability",
+        "lang": "en",
+		"layout": ["maintenant", "main", "daily_xlabel_landscape", "padding+10", "graph"],
+		"graph_objects": ["daily_weather_landscape"],
+		"graph_canvas": "default_landscape",		
+        "ramadhan": false
+    }
+}

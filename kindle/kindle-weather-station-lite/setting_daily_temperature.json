@@ -1,0 +1,20 @@
+{
+	"station": {
+		"city": "Kiyose,Tokyo",
+		"timezone": "Asia/Tokyo",
+		"encoding": "iso-8859-1",
+		"locale": "en_US.UTF-8",
+		"font": "Droid Sans",
+		"darkmode": "Auto",
+		"api": "Tomorrow.io",
+		"lat": 35.7853,
+		"lon": 139.5268,
+		"units": "metric",
+		"lang": "en",
+		"in_clouds": "probability",
+		"ramadhan": true,
+		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape_start0"],
+		"graph_objects": ["daily_temperature_spline_landscape"],
+		"graph_canvas": "default_landscape"		
+	}
+}

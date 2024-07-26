@@ -1,0 +1,20 @@
+{
+    "station": {
+        "city": "Saint-Petersburg",
+        "timezone": "Europe/Moscow",
+        "encoding": "utf-8",
+        "locale": "ru_RU.UTF-8",
+        "font": "Droid Sans",
+        "darkmode": false,
+		"api": "Tomorrow.io",
+        "lat": 59.9392259,
+        "lon": 29.5342917,
+        "units": "metric",
+        "lang": "ru",
+		"in_clouds": "probability",
+		"layout": ["maintenant", "main", "daily_xlabel_landscape", "padding+10", "graph"],
+		"graph_objects": ["daily_weather_landscape"],
+		"graph_canvas": "default_landscape",		
+        "ramadhan": false
+    }
+}
