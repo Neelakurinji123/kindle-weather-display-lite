@@ -18,23 +18,8 @@ Following API is available:
 
 ## Requirements
 
-- Jailbroken Kindle 3: https://wiki.mobileread.com/wiki/Kindle_Hacks_Information
-- Server: Minimum 256M/100M OpenWrt router or SBC (e.g. OrangePi zero)
-- Server OS: Openwrt, Ubuntu and Debian, etc which work with Python v3.11 or newer.
-- Server's devices: USB port x1, LAN port x1
-- WeatherAPI key
-- API key on CloudConvert for online image converter (optional)
-- user account on X (twitter) (optional)
+- Jailbroken Kindle: https://wiki.mobileread.com/wiki/Kindle_Hacks_Information
 
-
-## Create API key on CloudConvert (optional)
-
-Create API key with the following options:
-
-- user.read: View your user data 
-- user.write: Update your user data 
-- task.read: View your task and job data 
-- task.write: Update your task and job data
 
 
 ## Kindle PNG format
@@ -42,22 +27,22 @@ Create API key with the following options:
 kindle requires special PNG format. Converting process is as follows:
 
 ```
-                                               [The server sends a PNG file to Kindle and displays it]
+ [Image Process]
  SVG image ------------> PNG image ----------> flattened PNG image --> Kindle Dispaly
            converter:              converter:
-            a)cairosvg              a)convert
-            e)CloudConvert(online)
+            a)cairosvg              a)Wand
+
 ```
 
 ## Set up server
 
 ### 1. Install the program
 
-Copy `(github)/server/opt/lib/kindle-weather-station` to `(server)/opt/lib/kindle-weather-station`.
+Copy `(github)/kindle/kindle-weather-station` to `(kindle)/mnt/us/kindle-weather-station-lite`.
 
 ### 2. Set up user account
 
-In config directory, edit `OWM_API_KEY.json` or `tomorrow_io_API_KEY.json`, `cloudconvert.json`(optional) and `twitter_ID.json`(optional)
+In config directory, edit `tomorrow_io_API_KEY.json`
 
 ### 3. Edit config files
 
@@ -70,8 +55,8 @@ Default config is `setting.json`.
 
 #### Applications
 
-- imageMagick
-- cairo and cairosvg
+- imageMagick (include in pythgon3 packgage)
+- cairo (system) and cairosvg
 
 #### Python3(v3.11 or newer) and module Requirements
 
@@ -80,48 +65,10 @@ Default config is `setting.json`.
 - setuptools
 - pip
 - Wand
-- cloudconvert (optional)
-- twikit (optional, for twitter module)
-- deep_translator (optional, for twitter module)
-- qrcode (optional, for twitter module)
+- cairosvg
 - hijridate (optional, for moon\_phase module)
 
 
-e.g.) Openwrt
-
-```
-opkg update
-opkg install python3 python3-requests python3-setuptools python3-pip
-opkg install imagemagick
-opkg install cairo
-pip3 install Wand
-pip3 install cairosvg
-pip3 install tzdata
-pip3 install twikit (optional)
-pip3 install deep_translator (optional)
-pip3 install qrcode (optional)
-pip3 install cloudconvert (optional)
-pip3 install hijridate (optional)
-```
-
-#### Advanced Installation for Openwrt: To use Cairo on Openwrt.
-
-Install cairo and Python cairosvg module.&nbsp;
-Note: Converting QR code still has an issue.&nbsp;
-
-1. Download SDK from Openwrt site.
-2. Compile `cairo` with SDK and install the build package or use the pre-build package in this repository. (armv8 only)
-3. Install `cairosvg` via pip.
-4. Install a TTF font (e.g. `Sans_Regular.ttf` in this repository) to server's /root/.fonts: 
-5. Run `fc-cache -f`
-
-e.g.)
-
-```
-opkg install cairo_1.18.0-1_aarch64_generic.ipk
-opkg install fontconfig
-pip3 install cairosvg
-```
 
 ### 5. Network Time Synchronization
 
@@ -131,47 +78,27 @@ To retrieve data correctly, setup NTP server.
 
 All set up finished, then try it.
 
-`./kindle-weather.py png` # use default config
+`./weather.py png` # use default config
 
 or one of config files:
 
-`./kindle-weather.py setting_######.json png`
+`./weather.py setting_######.json png`
 
 Take a look at `/tmp/KindleStation_flatten.png`.
 
 
-### 7. Install USB network
-
-e.g.) Openwrt
-
-```
-opkg install kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether usbutils
-```
-
-## Set up Kindle
-
-Connect a USB cable to both the server and Kindle.
-
-USB cable uses for network and power supply.
-
-### 1. Set up usbnet
-
-The server: 192.168.2.1/24
-
-Kindle    : 192.168.2.2/24 (fixed address)
-
 ```
                 LOCAL NETWORK               USB NETWORK			
-                e.g.(192.168.1.0/24)
- WAN <-> ROUTER <--------------> THE SERVER <------> KINDLE
-                                 192.168.2.1/24      192.168.2.2/24
+                e.g.(192.168.1.0/24).        192.168.1.XX/24(wifi)
+ WAN <-> ROUTER <--------------> PC <------> KINDLE
+                          192.168.15.1/24    192.168.15.244/24(fix)
 		
 ```
 
-When usbnet setup is finished, access to Kindle. (no password)
+When usbnet setup is finished, access to Kindle. 
 
 ```
-ssh root@192.168.2.2
+ssh root@192.168.15.244
 ```
 
 ### 2. Set up ssh Auth key
@@ -193,7 +120,7 @@ scp dropbear_rsa_host_key.pub root@192.168.2.2:/tmp
 ssh root@192.168.2.2  # access to Kindle
 cat /tmp/dropbear_rsa_host_key.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
-ssh root@192.168.2.2  # test passwordless login
+ssh root@192.168.15.244  # test passwordless login
 ```
 
 e.g.) openssh (openwrt)
@@ -202,10 +129,10 @@ e.g.) openssh (openwrt)
 cd /root/.ssh
 opkg update
 opkg install openssh-client openssh-keygen openssh-sftp-client
-ssh-keygen -t ecdsa
-scp id_ecdsa.pub root@192.168.2.2:/tmp
-ssh root@192.168.2.2  # access to Kindle
-cat /tmp/id_ecdsa.pub >> /mnt/us/usbnet/etc/authorized_keys
+ssh-keygen -t rsa
+scp id.pub root@192.168.2.2:/tmp
+ssh root@192.168.15.244  # access to Kindle
+cat /tmp/id.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
 ssh root@192.168.2.2  # test passwordless login
 ```
@@ -225,20 +152,11 @@ The program's layout is as follows:
 |:------------------|:---------------------------|--------------:|
 | maintenant        | Time information           | 40            |
 | main              | Current and hourly weather | 480           |
-| main2             | Current weather            | 340           |
-| hourly            | Hourly weather             | 480           |
-| daily             | Daily weather              | 280           |
 | graph             | Graph  or tile             | 120           |
-| twitter           | Alert (Twitter)            | 280           |
-| daily_xlabel[6\\8]| Label on daily weather     | 20            |
+| daily_xlabel      | Label on daily weather     | 20            |
 | hourly_xlabel     | Label on hourly weather    | 20            |
 | padding[-+0-9]*   | Insert spaces (Y axis only)|               |
 
-Examples:
-- maintenant + main + daily (40 + 480 + 280 = 800)
-- maintenant + main2 + graph + \*\_xlabel + graph + \*\_xlabel + graph + padding20 (40 + 340 + 120 + 20 + 120 + 20 + 120 + 20 = 800)
-- maintenant + main + graph + \*\_xlabel + graph + padding20 (40 + 480 + 120 + 20 + 120 + 20 = 800)
-- maintenant + main + twitter (40 + 480 + 280 = 800)
 
 ### 1. maintenant
 
@@ -292,15 +210,9 @@ Available options are as follows:
   - "hourly\_snow\_accumulation": Hourly Snow Accumulation 
   - "moon\_phase": Moon Phase
 
-#### 3.1 graph 1: Daily Temperature and Moon Phase. (settings\_graph\_1.json)
 
-<kbd><img src="sample_screenshots/readme_imgs/graph_1.png" /></kbd>&nbsp;
 
-- config
-  - "graph\_objects": ["daily\_temperature", "moon\_phase"]
-  - "ramadhan": "True"
-
-##### 3.1.1 spline graph - landscape layout only (Optional)
+#### 3.1 spline graph 
 
 <kbd><img src="sample_screenshots/readme_imgs/KindleStation_spline.png" /></kbd>&nbsp;
 
@@ -308,61 +220,28 @@ Available options are as follows:
   - "graph\_objects": ["daily\_temperature\_spline\_landscape"]
 
     
-#### 3.2 graph 2: Daily Temperature and Daily Precipitation. (settings\_graph\_2.json)
 
-<kbd><img src="sample_screenshots/readme_imgs/graph_2.png" /></kbd>&nbsp;
-
-- config
-  - "graph\_objects": ["daily\_temperature", "daily_precipitation"]
-
-#### 3.3 graph 3: Daily Weather and Moon Phase. (settings\_graph\_3.json)
+#### 3.3 Moon Phase
 
 <kbd><img src="sample_screenshots/readme_imgs/graph_3.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": ["daily\_weather", "moon\_phase"]
+  - "graph\_objects": [ "moon\_phase"]
   - "ramadhan": "True"
 
-#### 3.4 graph 4: Hourly Temperature and Hourly Precipitation. (settings\_graph\_4.json)
+#### 3.4 Hourly Precipitation. (settings\_graph\_4.json)
 
 <kbd><img src="sample_screenshots/readme_imgs/graph_4.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": ["hourly\_temperature", "hourly\_precipitation"]
+  - "graph\_objects": [ "hourly\_precipitation"]
 
 ##### 3.4.1 spline graph - landscape layout only (Optional)
 
 - config
   - "graph\_objects": ["hourly\_temperature\_spline\_landscape"]
 
-### 4. Twitter
 
-<kbd><img src="sample_screenshots/readme_imgs/twitter.png" /></kbd>&nbsp;
-
-- config
-  - "twitter": {"caption": "ALERT", "screen\_name": "tenkijp", "translate": "True", "translate\_target": "en", "expiration": "3h", "alternate": \["graph", "daily\_xlabel[6|8]", "graph"\], "alternate_url": "https:\//tenki.jp/"\}
-    - "screen_name": [@]Twitter Screen Name
-    - "translate": If this option is "True", translate the text. 
-    - "translate\_target": en(English), Other languages may work, but I haven't test them yet. See [deep-translator](https://pypi.org/project/deep-translator/).
-    - "expiration": Valid within hours(h) or minutes(m), otherwise, use "alternate" layout.
-    - "alternate\_url": If extract URL from Twitter failed, use "alternate_url".
-  - "twitter\_keywords": {"include": "heavy,thunder,disaster", "exclude": "sakura,zakura"}
-    - "include": If one of "include" keyword do match, display Twitter, otherwise, use "alternate" layout.
-    - "exclude": If one of "exclude" keyword do match, use "alternate" layout. 
-
-## Landscape e-Paper layout
-
-<kbd><img src="sample_screenshots/kindle_weather-display-landscape.jpg"  height="360"/></kbd>&nbsp;&nbsp;
-<kbd><img src="sample_screenshots/KindleStation_flatten_daily_temperature_landscape.png"  height="360"/></kbd>&nbsp;
-
-Available module options are as follows:
-
-- config: "graph\_objects"
-  - "daily\_temperature\_landscape": Daily Temperature
-  - "daily\_weather\_landscape": Daily Weather
-  - "moon\_phase\_landscape": Moon Phase
-- config: "layout"
-  - ["twitter"] : X (former Twitter)
   
 ## Set up time schedule
 
@@ -373,8 +252,8 @@ e.g.)
 `crontab -e`
 
 ```
-0 */2 * * * sh -c "/opt/lib/kindle-weather-station/kindle-weather.py 2>>/tmp/kindle-weather-station.err"
-0 1-23/2 * * * sh -c "/opt/lib/kindle-weather-station/kindle-weather.py /opt/lib/kindle-weather-station/setting_twitter.json 2>>/tmp/kindle-weather-station.err"
+0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env_pw1; ./weather.py 2>>/tmp/kindle-weather-station.err"
+0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env_pw1; ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
 ```
 
 ```
