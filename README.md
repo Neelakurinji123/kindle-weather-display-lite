@@ -78,11 +78,11 @@ To retrieve data correctly, setup NTP server.
 
 All set up finished, then try it.
 
-`./weather.py png` # use default config
+`. ./env_pw1; ./weather.py png` # use default config
 
 or one of config files:
 
-`./weather.py setting_######.json png`
+`. ./env_pw1; ./weather.py setting_######.json png`
 
 Take a look at `/tmp/KindleStation_flatten.png`.
 
@@ -101,7 +101,7 @@ When usbnet setup is finished, access to Kindle.
 ssh root@192.168.15.244
 ```
 
-### 2. Set up ssh Auth key
+### 2. Setting up ssh Auth key
 
 - Create the server's pubkey.
 - Set up the server's ssh client environment.
@@ -117,7 +117,7 @@ cd /root/.ssh
 ln -s /etc/dropbear/dropbear_rsa_host_key id_dropbear
 cd -
 scp dropbear_rsa_host_key.pub root@192.168.2.2:/tmp
-ssh root@192.168.2.2  # access to Kindle
+ssh root@192.168.15.244  # access to Kindle
 cat /tmp/dropbear_rsa_host_key.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
 ssh root@192.168.15.244  # test passwordless login
@@ -134,14 +134,15 @@ scp id.pub root@192.168.2.2:/tmp
 ssh root@192.168.15.244  # access to Kindle
 cat /tmp/id.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
-ssh root@192.168.2.2  # test passwordless login
+ssh root@192.168.15.244  # test passwordless login
 ```
 
 ### 3. Test run
 
 ```
 cd /opt/lib/kindle-weather-station
-./kindle-weather.py [config.json]
+. ./env_pw1
+./weather.py [config.json]
 ```
 
 ## Layout
@@ -226,30 +227,40 @@ Available options are as follows:
 <kbd><img src="sample_screenshots/readme_imgs/graph_3.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": [ "moon\_phase"]
+  - "graph\_objects": [ "moon\_phase\_landscape"]
   - "ramadhan": "True"
 
-#### 3.4 Hourly Precipitation. (settings\_graph\_4.json)
+#### 3.4 Hourly Precipitation
 
 <kbd><img src="sample_screenshots/readme_imgs/graph_4.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "hourly\_precipitation"]
 
-##### 3.4.1 spline graph - landscape layout only (Optional)
+#### 3.5 daily weather
 
 - config
-  - "graph\_objects": ["hourly\_temperature\_spline\_landscape"]
+  - "graph\_objects": [ "daily\_weather\_landscape"]
+
+#### 3.6 daily Precipitation
+
+- config
+  - "graph\_objects": [ "daily\_rain\_precipitation\_6cols"]
 
 
-  
-## Set up time schedule
+#### 3.7 daily snow accumulation
 
-Edit the server's crontab and restart cron.
+- config
+  - "graph\_objects": [ "daily\_snow\_accumulation\_6cols"]
+
+    
+## Setting up time schedule
+
+Edit crontab and restart cron.
 
 e.g.)
 
-`crontab -e`
+`/etc/crontab/root`
 
 ```
 0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env_pw1; ./weather.py 2>>/tmp/kindle-weather-station.err"
@@ -257,14 +268,10 @@ e.g.)
 ```
 
 ```
-/etc/init.d/cron stop
-/etc/init.d/cron start
+kill -HUP `pidof crond`
 ```
 
 # Credits
 
-- [OpenWeatherMap](https://openweathermap.org/) , Weather API
 - [Tomorrow.io](https://www.tomorrow.io/) , Weather API
-- [CloudConvert](https://cloudconvert.com/) An online file converter
-- [X (Twitter)](https://twitter.com/home?lang=en) Twitter, Inc. is an American social media company.
 - [Bézier curves formula](https://www.particleincell.com/2012/bezier-splines/)
