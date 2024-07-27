@@ -161,20 +161,16 @@ The program's layout is as follows:
 
 ### 1. maintenant
 
-<kbd><img src="sample_screenshots/readme_imgs/maintenant_1.png" /></kbd>&nbsp;
+<kbd><img src="sample_screenshots/readme_imgs/maintenant.png" /></kbd>&nbsp;
 
-- config
-  - "city": "Granada"
-  - "sunrise\_and\_sunset": "False"
-
-<kbd><img src="sample_screenshots/readme_imgs/maintenant_2.png" /></kbd>&nbsp;
-
-- config
-  - "sunrise\_and\_sunset": "True"
+- date
+- sunrise
+- sunset
+- moonphase
 
 ### 2. main
 
-<kbd><img src="sample_screenshots/readme_imgs/main.png" /></kbd>&nbsp;
+<kbd><img src="sample_screenshots/readme_imgs/main_pane.png" /></kbd>&nbsp;
 
 - config
   - "timezone": "Pacific/Auckland" # UNIX zoneinfo
@@ -224,7 +220,7 @@ Available options are as follows:
 
 #### 3.3 Moon Phase
 
-<kbd><img src="sample_screenshots/readme_imgs/graph_3.png" /></kbd>&nbsp;
+<kbd><img src="sample_screenshots/readme_imgs/moonohase.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "moon\_phase\_landscape"]
@@ -232,23 +228,38 @@ Available options are as follows:
 
 #### 3.4 Hourly Precipitation
 
-<kbd><img src="sample_screenshots/readme_imgs/graph_4.png" /></kbd>&nbsp;
+<kbd><img src="sample_screenshots/readme_imgs/hourly_rain.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "hourly\_precipitation"]
 
-#### 3.5 daily weather
+#### 3.5 daily Precipitation
 
-- config
-  - "graph\_objects": [ "daily\_weather\_landscape"]
-
-#### 3.6 daily Precipitation
+<kbd><img src="sample_screenshots/readme_imgs/daily_rain.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "daily\_rain\_precipitation\_6cols"]
 
+  
+#### 3.6 daily weather
+
+<kbd><img src="sample_screenshots/readme_imgs/weather_tile.png" /></kbd>&nbsp;
+
+- config
+  - "graph\_objects": [ "daily\_weather\_landscape"]
+
+
+#### 3.7 hourly snow accumulation
+
+<kbd><img src="sample_screenshots/readme_imgs/hourly_snow.png" /></kbd>&nbsp;
+
+- config
+  - "graph\_objects": [ "hourly\_snow\_accumulation"]
+
 
 #### 3.7 daily snow accumulation
+
+<kbd><img src="sample_screenshots/readme_imgs/daily_snow.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "daily\_snow\_accumulation\_6cols"]

@@ -1,14 +1,14 @@
 {
 	"station": {
-		"city": "Kiyose,Tokyo",
-		"timezone": "Asia/Tokyo",
+		"city": "Taipei,Taiwan",
+		"timezone": "CST",
 		"encoding": "iso-8859-1",
 		"locale": "en_US.UTF-8",
 		"font": "Droid Sans",
 		"darkmode": false,
 		"api": "Tomorrow.io",
-		"lat": 35.7853,
-		"lon": 139.5268,
+		"lat": 25.0375,
+		"lon": 121.5625,
 		"units": "metric",
 		"lang": "en",
 		"in_clouds": "probability",

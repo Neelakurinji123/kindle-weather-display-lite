@@ -35,6 +35,52 @@ def readSettings(setting):
                             }
     return setting
 
+def zone_region(zone):
+    tz_list = {
+        'CET': 'Europe/Paris',
+        'CST6CDT': 'America/Chicago',
+        'Cuba': 'America/Havana',
+        'EET': 'Europe/Sofia',
+        'EST5EDT': 'America/New_York',
+        'GB': 'Europe/London',
+        'GB-Eire': 'Europe/London',
+        'GMT': 'Etc/GMT',
+        'Greenwich': 'Etc/GMT',
+        'Hongkong': 'Asia/Hong_Kong',
+        'HST': 'Pacific/Honolulu',
+        'Iceland': 'Africa/Abidjan',
+        'Iran': 'Asia/Tehran',
+        'Israel': 'Asia/Jerusalem',
+        'Jamaica': 'America/Jamaica',
+        'Japan': 'Asia/Tokyo',
+        'Kwajalein': 'Pacific/Kwajalein',
+        'Libya': 'Africa/Tripoli',
+        'MET': 'Europe/Paris',
+        'MST': 'America/Phoenix',
+        'Navajo': 'America/Denver',
+        'NZ': 'Pacific/Auckland',
+        'NZ-CHAT': 'Pacific/Chatham',
+        'Poland': 'Europe/Warsaw',
+        'Portugal': 'Europe/Lisbon',
+        'PRC': 'Asia/Shanghai',
+        'PST8PDT': 'America/Los_Angeles',
+        'ROC': 'Asia/Taipei',
+        'CST': 'Asia/Taipei',
+        'ROK': 'Asia/Seoul',
+        'Singapore': 'Asia/Singapore',
+        'Turkey': 'Europe/Istanbul',
+        'UCT': 'Etc/UTC',
+        'Universal': 'Etc/UTC',
+        'UTC': 'Etc/UTC',
+        'W-SU': 'Europe/Moscow',
+        'WET': 'Europe/Lisbon',
+        'Zulu': 'Etc/UTC'
+    }
+    if zone in tz_list:
+        return tz_list[zone]
+    else:
+        return zone
+
 class TomorrowIo:
     icon = str()
     units = dict()
@@ -45,7 +91,9 @@ class TomorrowIo:
         self.now = int(t.time())
         self.config = readSettings(config)
         self.api_data = api_data
-        self.tz = zoneinfo.ZoneInfo(self.config['timezone'])
+        zone = zone_region(self.config['timezone'])
+        self.tz = zoneinfo.ZoneInfo(zone)
+        #self.tz = zoneinfo.ZoneInfo(self.config['timezone'])
         tz_offset = self.tz.utcoffset(datetime.now())
         self.tz_offset = tz_offset.seconds if tz_offset.days == 0 else -tz_offset.seconds
         self.utc = zoneinfo.ZoneInfo('UTC')
@@ -84,7 +132,7 @@ class TomorrowIo:
             else:
                 print('API: Requests call rejected.')
                 exit(1)    
-        return api_data
+        return api_data  
 
     def CurrentWeather(self):
         c = self.api_data['1h']['data']['timelines'][0]['intervals'][0]['values']
@@ -96,8 +144,9 @@ class TomorrowIo:
         c['sunrise'] = self.conv_epoch(d['sunriseTime']) if not d['sunriseTime'] == None else 0
         c['sunset'] = self.conv_epoch(d['sunsetTime']) if not d['sunsetTime'] == None else 0
         # daitime
-        c['daytime'] = self.daytime(dt=c['dt'], sunrise=c['sunrise'], sunset=c['sunset'])
-        c['darkmode'] = self.dark_mode(config=self.config, daytime_state=c['daytime'])
+        c['daytime'] = self.daytime(dt=datetime.now().timestamp(), sunrise=c['sunrise'], sunset=c['sunset'])
+        #c['daytime'] = self.daytime(dt=c['dt'], sunrise=c['sunrise'], sunset=c['sunset'])
+        c['darkmode'] = self.darkmode(config=self.config, daytime_state=c['daytime'])
         # Temperature
         c['temp'] = float(c['temperature'])
         # Pressure
@@ -298,7 +347,7 @@ class TomorrowIo:
         else:
             return s
 
-    def dark_mode(self, config, daytime_state):
+    def darkmode(self, config, daytime_state):
         if config['darkmode'] == True:
             darkmode = True
         elif config['darkmode'] == "Auto":

@@ -181,7 +181,7 @@ class CurrentData:
                         y_main = self.y_main + 247
                     else:
                         font_size = '40'
-                        x_main = self.x_main + 185
+                        x_main = self.x_main + 185-20
                         y_main = self.y_main + 232
 
                     a += text('end', font_size, (x_main - padding), y_main, v).svg()
@@ -263,7 +263,7 @@ class CurrentData:
             y_main = self.y_main + 25
             return transform(f'(4,0,0,4,{self.x_main},{y_main})', addIcon(weather['main'])).svg()
         else:
-            x_main = self.x_main - 5
+            x_main = self.x_main - 5 - 20
             y_main = self.y_main + 40 
             x_sub_main = self.x_sub_main + 180
             y_sub_main = self.y_sub_main + 215
