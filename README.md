@@ -12,7 +12,7 @@ Following API is available:
  
 ## Screenshots
 
-<img src="sample_screenshots/screenshot.jpg" height="360" alt="Kindle 3 Screenshot" />&nbsp;
+<img src="sample_screenshots/screenshot1.jpg" height="360" alt="Kindle 3 Screenshot" />&nbsp;
 
 <kbd><img src="sample_screenshots/KindleStation_flatten.png" height="360" alt="Kindle 3 Screenshot" /></kbd>&nbsp;
 
