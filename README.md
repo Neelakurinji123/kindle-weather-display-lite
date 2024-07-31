@@ -73,21 +73,25 @@ or one of config files:
 Take a look at `/tmp/KindleStation_flatten.png`.
 
 
+### 7. USB network
+
+PW1:
+
 ```
-                LOCAL NETWORK               USB NETWORK			
+                [LOCAL NETWORK]               			                                   [Wi-Fi]
                 e.g.(192.168.1.0/24).        192.168.1.XX/24(wifi)
  WAN <-> ROUTER <--------------> PC <------> KINDLE
                           192.168.15.1/24    192.168.15.244/24(fix)
-		
+		                                      [USB NETWORK]                                             
 ```
 
-When usbnet setup is finished, access to Kindle. 
+When usbnet setup was finished, enable sshd server in KUAL, access to Kindle. 
 
 ```
 ssh root@192.168.15.244
 ```
 
-### 2. Setting up ssh Auth key
+### 8. Setup ssh Auth key (optional)
 
 - Create the server's pubkey.
 - Set up the server's ssh client environment.
@@ -123,16 +127,16 @@ exit
 ssh root@192.168.15.244  # test passwordless login
 ```
 
-### 3. Test run
+### 9. Test run
 
 ```
-cd /opt/lib/kindle-weather-station
+cd /mnt/us/kindle-weather-station-lite
 . ./env_pw1
-./weather.py [config.json]
+./weather.py [config file]
 ```
 
 ## Layout
-Kindle display size is 600 x 800.
+Layout size is 600 x 800.
 The program's layout is as follows:
 
 | Module name       | Function                   | Size (Y-axis) |
@@ -166,7 +170,7 @@ The program's layout is as follows:
   - "lon": "166.6445298"  # longitude
   - "units": "metric" # options: metric, imperial
   - "lang": "en" # language: en (English)
-  - "darkmode": "True", "False" and "Auto"( Note: To enable on openwrt, add `"system": "openwrt"`)	
+  - "darkmode": true, false and "Auto"
   
 #### 2.1 Value in cloud icon
 
@@ -195,7 +199,7 @@ Available options are as follows:
 
 
 
-#### 3.1 spline graph 
+#### 3.1 Daily Temperature
 
 <kbd><img src="sample_screenshots/readme_imgs/KindleStation_spline.png" /></kbd>&nbsp;
 
@@ -263,6 +267,8 @@ e.g.)
 0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env_pw1; ./weather.py 2>>/tmp/kindle-weather-station.err"
 0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env_pw1; ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
 ```
+
+restart cron
 
 ```
 kill -HUP `pidof crond`
