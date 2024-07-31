@@ -12,27 +12,13 @@ Following API is available:
  
 ## Screenshots
 
-<img src="sample_screenshots/screenshot1.jpg" height="360" alt="Kindle 3 Screenshot" />&nbsp;
+<kbd><img src="sample_screenshots/screenshot1.jpg" height="360" alt="Kindle 3 Screenshot" /></kbd>&nbsp;
 
 <kbd><img src="sample_screenshots/KindleStation_flatten.png" height="360" alt="Kindle 3 Screenshot" /></kbd>&nbsp;
 
 ## Requirements
 
-- Jailbroken Kindle: https://wiki.mobileread.com/wiki/Kindle_Hacks_Information
-
-
-
-## Kindle PNG format
-
-kindle requires special PNG format. Converting process is as follows:
-
-```
- [Image Process]
- SVG image ------------> PNG image ----------> flattened PNG image --> Kindle Dispaly
-           converter:              converter:
-            a)cairosvg              a)Wand
-
-```
+- Jailbroken Kindle: https://wiki.mobileread.com/wiki/Kindle\_Hacks\_Information
 
 ## Set up server
 

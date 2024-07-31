@@ -88,7 +88,7 @@ def img_processing(p, svg):
         img.save(filename=flatten_pngfile)
     img.close()
 
-def main(config, flag_dump, flag_config, flag_svg, flag_png):    
+def main(config, flag_dump, flag_config, flag_svg, flag_png):
 
     try:
         if config['api'] == 'Tomorrow.io':
@@ -112,18 +112,6 @@ def main(config, flag_dump, flag_config, flag_svg, flag_png):
             print(json.dumps(p.config, ensure_ascii=False, indent=4))
             exit(0)
 
-        # get Kindle's display size
-        try:
-            with open("/sys/class/graphics/fb0/virtual_size", 'r') as f:
-                s = f.readline().strip()
-                kindle_h, kindle_w = s.split(',')
-        except:
-            if p.config['kindle_w'] == None and p.config['kindle_h'] == None:
-                kindle_h, kindle_w = 600, 800
-            else:
-                kindle_h = p.config['kindle_h']
-                kindle_w = p.config['kindle_w']
-
         # main body
         text, draw = svg_processing(p=p)
         # add footer
@@ -131,12 +119,12 @@ def main(config, flag_dump, flag_config, flag_svg, flag_png):
         _s = SVGtools.text('end', '16', (p.config['w'] - 5), (p.config['h'] - 5), s).svg()
         text += SVGtools.fontfamily(font=p.config['font'], _svg=_s).svg()
         _svg = text + draw
-        svg =  SVGtools.format(encoding=p.config['encoding'], height=kindle_h, width=kindle_w, font=p.config['font'], _svg=_svg).svg()
+        svg =  SVGtools.format(encoding=p.config['encoding'], height=config['kindle_h'], width=config['kindle_w'], font=p.config['font'], _svg=_svg).svg()
         if flag_svg == True:
             output = svgfile
             with open(output, 'w', encoding='utf-8') as f:
                 f.write(svg)
-            f.close()    
+            f.close()
             exit(0)
         else:
             img_processing(p=p, svg=svg)
@@ -153,18 +141,14 @@ def main(config, flag_dump, flag_config, flag_svg, flag_png):
     if os.uname().nodename == 'kindle':
         if os.environ.get('KINDLE_VER') == 'k3':
             cmd = './initialize_k3.sh'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
-            cmd = '/usr/sbin/eips -c'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
-            cmd = f'cd /tmp; /usr/sbin/eips -g {flatten_pngfile}'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
         else:
             cmd = './initialize_pw1.sh'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
-            cmd = '/usr/sbin/eips -c -f'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
-            cmd = f'cd /tmp; /usr/sbin/eips -g {flatten_pngfile}'
-            out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
+
+        out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
+        cmd = '/usr/sbin/eips -c -f'
+        out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
+        cmd = f'cd /tmp; /usr/sbin/eips -g {flatten_pngfile}'
+        out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
 
 if __name__ == "__main__":
     flag_dump, flag_config, flag_svg, flag_png = False, False, False, False
@@ -190,7 +174,7 @@ if __name__ == "__main__":
     with open(setting, 'r') as f:
         service = json.load(f)['station']
     f.close()
-    
+
     config = dict()
     config['city'] = service['city'] if 'city' in service else None
     config['timezone'] = service['timezone'] if 'timezone' in service else None
@@ -205,14 +189,14 @@ if __name__ == "__main__":
     config['lang'] = service['lang'] if 'lang' in service else 'en'
     config['in_clouds'] = service['in_clouds'] if 'in_clouds' in service else str()  # Options: "cloudCover", "probability"
     config['layout'] = service['layout']
-    config['w'], config['h'] = 800, 600   
+    config['w'], config['h'] = 800, 600
     config['ramadhan'] = service['ramadhan']
     config['i18n_file'] = i18n_config
 
     with open(graph_config, 'r') as f:
         graph = json.load(f)['graph']
     f.close()
-    
+
     config['graph_lines'] = graph['lines']
     config['graph_labels'] = graph['labels']
     b = list(service['graph_objects']) if 'graph_objects' in service else None
@@ -220,17 +204,25 @@ if __name__ == "__main__":
         config['graph_canvas'] = graph['canvas'][service['graph_canvas']]
         config['graph_objects'] = list()
         for n in b:
-            config['graph_objects'].append(graph['objects'][n])           
+            config['graph_objects'].append(graph['objects'][n])
     else:
         config['graph_canvas'] = dict()
         config['graph_objects'] = list()
-        
-    if 'kindle' in graph:
-        config['kindle_w'] = graph['kindle']['w']
-        config['kindle_h'] = graph['kindle']['h']
+
+    # get Kindle's display size
+    if os.uname().nodename == 'kindle':
+        try:
+            if 'KINDLE_H' in os.environ and 'KINDLE_W' in os.environ:
+                config['kindle_h'] = int(os.environ.get('KINDLE_H'))
+                config['kindle_w'] = int(os.environ.get('KINDLE_W'))
+            else:
+                config['kindle_h'], config['kindle_w'] = 600, 800
+        except:
+            with open("/sys/class/graphics/fb0/virtual_size", 'r') as f:
+                s = f.readline().strip()
+                config['kindle_h'], config['kindle_w'] = list(map(int, s.split(',')))
     else:
-        config['kindle_w'] = None
-        config['kindle_h'] = None
+        config['kindle_h'], config['kindle_w'] = 600, 800
 
     main(config, flag_dump, flag_config, flag_svg, flag_png)
     

@@ -93,6 +93,10 @@ class Maintenant:
         self.config = p.config
         self.y = y
         self.font = self.p.config['font']
+        self.x_date = 20
+        self.x_sunrise = 550
+        self.x_sunset = 665
+        self.x_moon = 775
         
     def text(self):
         y = self.y + 40
@@ -100,31 +104,27 @@ class Maintenant:
         daytime_state = weather['daytime']
         a = str()
 
+        timestamp = datetime.fromtimestamp
         if weather['sunrise'] == 0:
             sunrise = "--:--"
         else:
             try:
-                sunrise = str(datetime.fromtimestamp(weather['sunrise'], self.p.tz).strftime('%-H:%M'))
+                sunrise = str(timestamp(weather['sunrise'], self.p.tz).strftime('%-H:%M'))
             except Exception as e:
                 sunrise = '--:--'
         if weather['sunset'] == 0:
             sunset = '--:--'
         else:
             try:
-                sunset = str(datetime.fromtimestamp(weather['sunset'], self.p.tz).strftime('%-H:%M'))
+                sunset = str(timestamp(weather['sunset'], self.p.tz).strftime('%-H:%M'))
             except Exception as e:
                 sunset = '--:--'
         # localtime
-        maintenant = (str.lower(datetime.fromtimestamp(self.p.now, self.p.tz).strftime('%A, %d %B %-H:%M')))
+        maintenant = (str.lower(timestamp(self.p.now, self.p.tz).strftime('%A, %d %B %-H:%M')))
         w = maintenant.split()
         #d = read_i18n(self.p)
         #w[0] = d["abbreviated_weekday"][w[0][:-1]] + ',' if not d == dict() else w[0]
         #w[2] = d["abbreviated_month"][w[2]] if not d == dict() else w[2]
-
-        x_date = 20
-        x_sunrise = x_date + 520
-        x_sunset = x_sunrise + 125
-        x_moon = 775
         r = 12      
         # moon icon
         d = weather['darkmode']
@@ -134,31 +134,30 @@ class Maintenant:
         else:
             fg_color = 'rgb(0,0,0)'
             bg_color = 'rgb(255,255,255)'   
-        a += circle(x_moon, (y - 10), (r - 1), fg_color, 0, fg_color).svg()    
+        a += circle(self.x_moon, (y - 10), (r - 1), fg_color, 0, fg_color).svg()    
         yr, mon, day, _, _, _, _, _, _ = datetime.now().timetuple()
         kw = {'p': self.p, 'day': day, 'mon': mon, 'yr': yr, 'lat': float(self.p.config['lat']), \
-                'rx': x_moon, 'ry': (y - 10), 'r': r, 'ramadhan': self.p.config['ramadhan']}
+                'rx': self.x_moon, 'ry': (y - 10), 'r': r, 'ramadhan': self.p.config['ramadhan']}
         m = Moonphase(**kw)
         dm, ps, ram = m.calc()
         style = f'fill:{bg_color};stroke:{bg_color};stroke-width:0px;'
         a += m.svg(dm=dm, ps=ps, stroke_color=bg_color, r_plus=0, stroke=0, style=style)
         if m.darkmode == True and ps == 'f':
             color = 'rgb(0,0,0)'
-            a += circle(x_moon, (y - 10), r, color, '2', color).svg()
-                
-        a += text('start', '30', x_sunrise, y, sunrise).svg()
-        a += text('start', '30', x_sunset, y, sunset).svg()
-        a += text('start', '30', x_date, y, ' '.join(w)).svg()
+            a += circle(self.x_moon, (y - 10), r, color, '2', color).svg()   
+        a += text('start', '30', self.x_sunrise, y, sunrise).svg()
+        a += text('start', '30', self.x_sunset, y, sunset).svg()
+        a += text('start', '30', self.x_date, y, ' '.join(w)).svg()
         svg = fontfamily(font=self.font, _svg=a).svg()
         return svg
 
     def icon(self):
         i = str()
-        x_sunrise = 503
-        x_sunset = x_sunrise + 127
+        self.x_sunrise += -37
+        self.x_sunset += -35
         y_sun = self.y + 14
-        i += transform(f'(1.1,0,0,1.1,{x_sunrise},{y_sun})', Icons.Sunrise()).svg()     
-        i += transform(f'(1.1,0,0,1.1,{x_sunset},{y_sun})', Icons.Sunset()).svg()
+        i += transform(f'(1.1,0,0,1.1,{self.x_sunrise},{y_sun})', Icons.Sunrise()).svg()     
+        i += transform(f'(1.1,0,0,1.1,{self.x_sunset},{y_sun})', Icons.Sunset()).svg()
         return i
 
 
@@ -168,21 +167,20 @@ class CurrentData:
         a = str()           
         # 'in_clouds' option: cloudCover, probability
         if not self.p.config['in_clouds'] == str():
-            #if weather['main'] in ['Rain', 'Drizzle', 'Snow', 'Sleet', 'Cloudy']:
             if weather['main'] in ['Cloudy']:
                 v = Decimal(weather['in_clouds']).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
                 padding = int(s_padding(v) * 0.64)
                 if v == 0:
-                    a += text('end', '45', (self.x_main + 230 - padding), (self.y_main + 215), "").svg()
+                    a += text('end', '45', (self.x_main + 230 - padding), (self.y_main + 190), "").svg()
                 else:
                     if weather['main'] == self.sub_main:
                         font_size = '45'
                         x_main = self.x_main + 225
-                        y_main = self.y_main + 247
+                        y_main = self.y_main + 222
                     else:
                         font_size = '40'
-                        x_main = self.x_main + 185-20
-                        y_main = self.y_main + 232
+                        x_main = self.x_main + 165
+                        y_main = self.y_main + 207
 
                     a += text('end', font_size, (x_main - padding), y_main, v).svg()
         return a
@@ -192,38 +190,42 @@ class CurrentData:
         daily = self.p.DailyForecast(0)
         style_line = 'stroke:black;stroke-width:1px;'
         a = str()
+        x, y = self.x_temp, self.y_temp
         # Temperature
         tempEntier = math.floor(weather['temp'])
         tempDecimale = 10 * (weather['temp'] - tempEntier)
-        a += text('end', '100', (self.x_temp - 10), (self.y_temp), int(tempEntier)).svg()
-        a += text('start', '50', (self.x_temp - 5), (self.y_temp - 5), '.' + str(int(tempDecimale))).svg()
-        a += add_unit_temp(units=self.p.units, x=self.x_temp, y=self.y_temp, font_size=50)
+        a += text('end', '100', x, y, int(tempEntier)).svg()
+        a += text('start', '50', (x + 5), (y - 5), '.' + str(int(tempDecimale))).svg()
+        a += add_unit_temp(units=self.p.units, x=x+10, y=y, font_size=50)
         # Max temp
-        a += text('end', '35', (self.x_temp + 113), (self.y_temp - 40), int(math.ceil(daily['temp_max']))).svg()
-        a += add_unit_temp(units=self.p.units, x=(self.x_temp + 115), y=(self.y_temp - 40), font_size=35)
+        _x = 113
+        _y = -40
+        a += text('end', '35', (x + _x), (y + _y), int(math.ceil(daily['temp_max']))).svg()
+        a += add_unit_temp(units=self.p.units, x=(x + _x + 2), y=(y + _y), font_size=35)
         # Line
-        a += line((self.x_temp + 55), (self.x_temp + 155), (self.y_temp - 33), (self.y_temp - 33), style_line).svg()
+        a += line((x + _x - 58), (x + _x + 42), (y + _y + 7), (y + _y + 7), style_line).svg()
         # Min temp
-        a += text('end', '35', (self.x_temp + 113), (self.y_temp), int(math.ceil(daily['temp_min']))).svg()
-        a += add_unit_temp(units=self.p.units, x=(self.x_temp + 115), y=self.y_temp, font_size=35)
+        a += text('end', '35', (x + _x), y, int(math.ceil(daily['temp_min']))).svg()
+        a += add_unit_temp(units=self.p.units, x=(x + _x + 2), y=(y + _y + 40), font_size=35)
         return a
 
     def pressure(self):
         weather = self.p.CurrentWeather()
+        y = self.y_text + 40
         sp_x = -5
         if self.p.config['units'] == 'imperial':
             _sp = -10
         else:
             _sp = 0
-        a = text('end', '30', (self.x_text + sp_x + 280 + _sp),(self.y_text + 360), str(round(weather['pressure']))).svg()
-        a+= text('end', '23', (self.x_text + 320),(self.y_text + 360), self.p.units['pressure']).svg()
+        a = text('end', '30', (self.x_text + sp_x - 40 + _sp), y, str(round(weather['pressure']))).svg()
+        a+= text('end', '23', self.x_text, y, self.p.units['pressure']).svg()
         return a
 
     def humidity(self):
         weather = self.p.CurrentWeather()
-        x = self.x_text + 295
-        x2 = self.x_text + 320
-        y = self.y_text + 320
+        x = self.x_text - 25
+        x2 = self.x_text
+        y = self.y_text
         a = text('end', '30', x, y, str(round(weather['humidity']))).svg()
         a += text('end', '23', x2, y, '%').svg()
         return a
@@ -231,9 +233,9 @@ class CurrentData:
     def wind(self):
         weather = self.p.CurrentWeather()
         weather['cardinal'] = str() if int(weather['wind_speed']) == 0 else weather['cardinal']
-        x = self.x_text + 174
-        x2 = self.x_text + 217
-        y = self.y_text + 320
+        x = self.x_text - 146
+        x2 = self.x_text - 103
+        y = self.y_text
         if self.p.config['units'] == 'imperial':
             _sp = -10
         else:
@@ -245,13 +247,12 @@ class CurrentData:
 
     def description(self):
         weather = self.p.CurrentWeather()
-        y = self.y_text
-        x = self.x_text
+        y = self.y_text + 80
         a = str()
         self.wordwrap = 22
         disc = split_text(wordwrap=self.wordwrap, text=weather['description'].lower(), max_rows=2)
         for w in disc:
-            a += text('end', '30', (x + 320), (y + 400), w).svg()
+            a += text('end', '30', self.x_text, y, w).svg()
             y += 35
         return a
 
@@ -260,11 +261,10 @@ class CurrentData:
         style_line = 'stroke:black;stroke-width:2px;'
         i = str()
         if weather['main'] == self.sub_main:
-            y_main = self.y_main + 25
-            return transform(f'(4,0,0,4,{self.x_main},{y_main})', addIcon(weather['main'])).svg()
+            return transform(f'(4,0,0,4,{self.x_main},{self.y_main})', addIcon(weather['main'])).svg()
         else:
-            x_main = self.x_main - 5 - 20
-            y_main = self.y_main + 40 
+            x_main = self.x_main - 25
+            y_main = self.y_main + 15
             x_sub_main = self.x_sub_main + 180
             y_sub_main = self.y_sub_main + 215
             i += line((x_main + 285), (x_main + 225), (y_main + 180), (y_main + 270), style_line).svg()
@@ -279,13 +279,13 @@ class CurrentWeatherPane(CurrentData):
         self.y = y
         self.wordwrap = wordwrap 
         self.x_main = self.x - 25
-        self.y_main = y - 90
+        self.y_main = self.y - 65
         self.x_sub_main = self.x
-        self.y_sub_main = y - 90
-        self.x_temp = self.x + 160
-        self.y_temp = y + 305
-        self.x_text = self.x
-        self.y_text = y
+        self.y_sub_main = self.y - 90
+        self.x_temp = self.x + 405
+        self.y_temp = self.y + 135
+        self.x_text = self.x + 570
+        self.y_text = self.y + 185
         self.font = p.config['font']
         weather = p.CurrentWeather()
         self.day_state = weather['daytime']
@@ -313,21 +313,13 @@ class CurrentWeatherPane(CurrentData):
         
     def text(self):
         # genarate main info pane
-        self.x_text = 260
-        self.y_text = -125
-        prec = super(CurrentWeatherPane, self).precipitation()
-        self.x_temp = 415
-        self.y_temp = 185
-        temp = super(CurrentWeatherPane, self).temperature()
-        self.x_text = 250
-        self.y_text = -85
-        pres = super(CurrentWeatherPane, self).pressure()
-        self.x_text = 250
-        humi = super(CurrentWeatherPane, self).humidity()
-        self.x_text = 260
-        wind = super(CurrentWeatherPane, self).wind()
-        self.x_text = 250
-        disc = super(CurrentWeatherPane, self).description()
+        w = super(CurrentWeatherPane, self)
+        prec = w.precipitation()
+        temp = w.temperature()
+        pres = w.pressure()
+        humi = w.humidity()
+        wind = w.wind()
+        disc = w.description()
         a = fontfamily(font=self.font, _svg=prec + temp + pres + humi + wind + disc).svg()
         return a
 
@@ -335,7 +327,8 @@ class CurrentWeatherPane(CurrentData):
 class HourlyWeatherPane:
     def __init__(self, p, y, hour, span, step, pitch):
         self.p = p
-        self.y = y
+        self.y = y - 30
+        self.x = 550
         self.hour = hour
         self.span = span
         self.step = step
@@ -349,21 +342,19 @@ class HourlyWeatherPane:
         d = read_i18n(self.p)
         a = str()
         # 3hr forecast
-        x = 550
         for i in range(self.hour, self.span, self.step):
             weather = self.p.HourlyForecast(i)
-            a += text('end', '35', (x + 200), (y + 90), round(weather['temp'])).svg()
-            a += add_unit_temp(units=self.p.units, x=(x + 200), y=(y + 90), font_size=35)
-            a += text('start', '30', (x + 55), (y + 160), hrs[i]).svg()
-            # 'in_clouds' option: cloudCover, probability
+            a += text('end', '35', (self.x + 200), (y + 115), round(weather['temp'])).svg()
+            a += add_unit_temp(units=self.p.units, x=(self.x + 200), y=(y + 115), font_size=35)
+            a += text('start', '30', (self.x + 55), (y + 190), hrs[i]).svg()
+            # 'in_clouds' options: cloudCover, probability
             if not self.in_clouds == str():
-                #if weather['main'] in ['Rain', 'Drizzle', 'Snow', 'Sleet', 'Cloudy']:
                 if weather['main'] in ['Cloudy']:
                     v = Decimal(weather['in_clouds']).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
                     if v == 0:
-                        a += text('end', '25', int(x + 160 - s_padding(v) * 0.357), (y + 82), '').svg()
+                        a += text('end', '25', int(self.x + 160 - s_padding(v) * 0.357), (y + 112), '').svg()
                     else:
-                        a += text('end', '25', int(x + 122 - s_padding(v) * 0.357), (y + 82), v).svg()
+                        a += text('end', '25', int(self.x + 122 - s_padding(v) * 0.357), (y + 112), v).svg()
             y += self.pitch
         return fontfamily(font=self.font, _svg=a).svg()
 
@@ -371,8 +362,6 @@ class HourlyWeatherPane:
         y = self.y
         i = str()
         c_weather = self.p.CurrentWeather()
-        x = 550
-        y += -30
         matrix = '2.0,0,0,2.0'
         for n in range(self.hour, self.span, self.step):
             weather = self.p.HourlyForecast(n)
@@ -382,7 +371,7 @@ class HourlyWeatherPane:
                 weather['main'] = re.sub('Day', 'Night', weather['main'])
             elif daytime_state == 'midnight_sun' and re.search('Night', weather['main']):
                 weather['main'] = re.sub('Night', 'Day', weather['main'])
-            i += transform(f'({matrix},{x},{y})', addIcon(weather['main'])).svg()
+            i += transform(f'({matrix},{self.x},{y})', addIcon(weather['main'])).svg()
             y += self.pitch
         return i
 
@@ -526,7 +515,6 @@ class GraphPane:
             # get max and min temp
             tMin = min([self.p.HourlyForecast(n)['temp'] for n in range(self.start, self.end, self.step)])
             tMax = max([self.p.HourlyForecast(n)['temp'] for n in range(self.start, self.end, self.step)])
-
             # get graph y-axis step
             tStep = 80 / (tMax - tMin) if (tMax - tMin) != 0 else 1
             # title
@@ -557,7 +545,6 @@ class GraphPane:
 
             tMin = min([temp(n) for n in range(self.start, self.end, self.step) if temp(n) is not None])
             tMax = max([temp(n) for n in range(self.start, self.end, self.step) if temp(n) is not None])
-
             # get graph y-axis step
             tStep = 80 / (tMax - tMin) if (tMax - tMin) != 0 else 1
             # title
@@ -578,7 +565,7 @@ class GraphPane:
                 # add temp
                 a += text('middle', '25', x, (_y - 14), int(weather['temp_day'])).svg()
                 a += circle((x + 17), (_y - 29), 3, 'black', 2, 'none').svg()              
-        # draw filled graph
+        # draw filled spline graph
         a += spline(lst=lst, _x=lst[0][0], _y=(y + 95), stroke=self.fill, stroke_width=0, fill=self.fill).svg()
         # draw spline graph
         a += spline(lst=lst, stroke=self.stroke_color, stroke_width=self.stroke).svg()
@@ -688,83 +675,72 @@ class GraphPane:
 
     def tile(self):
         sp_x = int((self.w - self.canvas_w) * 0.5)
-        kwargs = {  'p': self.p, 'y': self.y, 'w': self.canvas_w, 'h': self.canvas_h, 'bgcolor': self.bgcolor, 'axis': self.axis, 
-                    'axis_color': self.axis_color, 'grid': self.grid, 'grid_color': self.grid_color, 
-                    'grid_ext_upper': self.grid_ext_upper, 'grid_ext_lower': self.grid_ext_lower, 
-                    'title': self.title, 'start': self.start, 'step': self.step, 'end': self.end, 
-                    'basis': self.basis, 'stroke': self.stroke, 
-                    'stroke_color': self.stroke_color, 'fill': self.fill, 'stroke_linecap': self.stroke_linecap, 
-                    'tz': self.p.tz, 'sp_x': sp_x}
         # Start
         a = str()
         # Canvas 
         a += rect(x=sp_x, y=(self.y - self.canvas_h + 140), width=self.canvas_w, height=(self.canvas_h - 45), style=self.style_bg).svg()
 
-        def daily_weather(p, y, w, h, bgcolor, axis, axis_color, grid, grid_color, grid_ext_upper, grid_ext_lower, \
-                            stroke, stroke_color, fill, stroke_linecap, \
-                            title, start, end, step, basis, tz, sp_x, **kwargs):
-            box_size_x = (w - (end - start - 1) * grid) / (end - start)
+        def daily_weather(self, sp_x):
+            box_size_x = (self.canvas_w - (self.end - self.start - 1) * self.grid) / (self.end - self.start)
             half = int(box_size_x * 0.5)
-            i18n = read_i18n(p)
+            i18n = read_i18n(self.p)
             i, s = str(), str()
-            c_weather = p.CurrentWeather()
+            c_weather = self.p.CurrentWeather()
             day_state = c_weather['daytime']
-            for n in range(start, end, step):
+            for n in range(self.start, self.end, self.step):
                 try:
-                    weather = p.DailyForecast(n)
+                    weather = self.p.DailyForecast(n)
                 except IndexError:
                     break
-                jour = str.lower(datetime.fromtimestamp(weather['dt'], tz).strftime('%a'))
+                jour = str.lower(datetime.fromtimestamp(weather['dt'], self.p.tz).strftime('%a'))
                 #jour = i18n["abbreviated_weekday"][jour] if not i18n == dict() else jour
                 # tweak weather icon
                 if (day_state == 'polar_night' or day_state == 'night') and re.search('Day', weather['main']):
                     weather['main'] = re.sub('Day', 'Night', weather['main'])
                 elif (day_state == 'midnight_sun' or day_state == 'day') and re.search('Night', weather['main']):
                     weather['main'] = re.sub('Night', 'Day', weather['main'])
-                _x = int(sp_x + (box_size_x + grid) * (n - start))
-                _y = y + 90
-
+                _x = int(sp_x + (box_size_x + self.grid) * (n - self.start))
+                _y = self.y + 90
                 i += transform(f'(1.8,0,0,1.8,{(_x - 10)},{(_y - 180)})', addIcon(weather['main'])).svg()
                 s += text(anchor='end', fontsize='30', x=(_x + half - 20), y=_y, v=round(weather['temp_min']), stroke='rgb(128,128,128)').svg()
                 s += circle((_x + half - 14), (_y - 20), 3, 'rgb(128,128,128)', 2, 'none').svg()
                 s += text('end', '30', (_x + half + 45), _y, round(weather['temp_max'])).svg()
                 s += circle((_x + half + 51), (_y - 20), 3, 'black', 2, 'none').svg()
-                if n < (end - 1):
-                    i += line((_x + box_size_x), (_x + box_size_x), (_y - h + 55 - grid_ext_upper), (_y + 5), self.style_grid).svg()
-
+                if n < (self.end - 1):
+                    i += line((_x + box_size_x), (_x + box_size_x), (_y - self.canvas_h + 55 - self.grid_ext_upper), (_y + 5), self.style_grid).svg()
             return s,i
 
-        def moon_phase(p, y, w, h, bgcolor, axis, axis_color, grid, grid_color, stroke, stroke_color, fill, stroke_linecap, \
-                             grid_ext_upper, grid_ext_lower, title, start, end, step, basis, tz, sp_x, **kwargs):
-            box_size_x = (w - (end - start - 1) * grid) / (end - start)
+        def moon_phase(self, sp_x):
+            box_size_x = (self.canvas_w - (self.end - self.start - 1) * self.grid) / (self.end - self.start)
             half = int(box_size_x * 0.5)
-            i18n = read_i18n(p)
-            ramadhan = p.config['ramadhan']
+            i18n = read_i18n(self.p)
+            ramadhan = self.p.config['ramadhan']
             i, s = str(),str()
-            for n in range(start, end, step):
+            for n in range(self.start, self.end, self.step):
                 try:
-                    weather = p.DailyForecast(n)
+                    weather = self.p.DailyForecast(n)
                 except IndexError:
                     break
-                jour = str.lower(datetime.fromtimestamp(weather['dt'], tz).strftime('%a'))
+                timestamp = datetime.fromtimestamp
+                jour = str.lower(timestamp(weather['dt'], self.p.tz).strftime('%a'))
                 jour = i18n["abbreviated_weekday"][jour] if not i18n == dict() else jour
-                yr, mon, day, _, _, _, _, _, _ = datetime.fromtimestamp(weather['dt'], tz).timetuple()  
-                lat = float(p.config['lat'])
-                moonrise = '--:--' if weather['moonrise'] == 0 else str(datetime.fromtimestamp(weather['moonrise'], tz).strftime('%-H:%M'))
-                moonset = '--:--' if weather['moonset'] == 0 else str(datetime.fromtimestamp(weather['moonset'], tz).strftime('%-H:%M'))                
+                yr, mon, day, _, _, _, _, _, _ = timestamp(weather['dt'], self.p.tz).timetuple()  
+                lat = float(self.p.config['lat'])
+                moonrise = '--:--' if weather['moonrise'] == 0 else str(timestamp(weather['moonrise'], self.p.tz).strftime('%-H:%M'))
+                moonset = '--:--' if weather['moonset'] == 0 else str(timestamp(weather['moonset'], self.p.tz).strftime('%-H:%M'))                
 
-                _x = int(sp_x + (box_size_x + grid) * n) 
-                _y = y - 10
+                _x = int(sp_x + (box_size_x + self.grid) * n) 
+                _y = self.y - 10
                 # grid
-                if n < (end - 1):
-                    i += line((_x + box_size_x), (_x + box_size_x), (_y - h + 145 - grid_ext_upper), (_y + 105), self.style_grid).svg()                 
+                if n < (self.end - 1):
+                    i += line((_x + box_size_x), (_x + box_size_x), (_y - self.canvas_h + 145 - self.grid_ext_upper), (_y + 105), self.style_grid).svg()                 
                 # Moon icon
                 r = 25
-                kw = {'p': p, 'day': day, 'mon': mon, 'yr': yr, 'lat': lat, 'rx': _x + half, 'ry': _y + 15, 'r': r, 'ramadhan': ramadhan}
+                kw = {'p': self.p, 'day': day, 'mon': mon, 'yr': yr, 'lat': lat, 'rx': _x + half, 'ry': _y + 15, 'r': r, 'ramadhan': ramadhan}
                 m = Moonphase(**kw)
                 dm, ps, ram = m.calc()
-                style = f'fill:{fill};stroke:{stroke_color};stroke-width:1px;'
-                i += m.svg(dm=dm, ps=ps, stroke_color=stroke_color, r_plus=2, stroke=stroke, style=style)
+                style = f'fill:{self.fill};stroke:{self.stroke_color};stroke-width:1px;'
+                i += m.svg(dm=dm, ps=ps, stroke_color=self.stroke_color, r_plus=2, stroke=self.stroke, style=style)
                 if m.darkmode == True and ps == 'f':
                     i += circle(_x + half, _y + 15, r + 1, 'rgb(0,0,0)', '2', 'rgb(0,0,0)').svg()
                 # Text: moonrise and moonset
@@ -780,9 +756,9 @@ class GraphPane:
             return s,i
         # Graph
         if self.basis == 'day' and self.title == 'weather':
-            s,i = daily_weather(**kwargs)
+            s,i = daily_weather(self, sp_x)
         elif self.basis == 'day' and self.title == 'moon phase':
-            s,i = moon_phase(**kwargs)        
+            s,i = moon_phase(self, sp_x)        
             s += text('start', '16', 10, (self.h - 5), 'moon phase').svg()
         a += s + i         
         return fontfamily(font=self.font, _svg=a).svg()
@@ -815,7 +791,7 @@ class Moonphase:
         
         def phase(rad):
             #one_day_step = 2 * pi / 56
-            one_day_step = 2 * pi / 54
+            one_day_step = 2 * pi / 55.95
             if one_day_step > rad >= 0 or one_day_step > abs(pi * 2 - rad) >= 0:
                 a = 'n'
             elif one_day_step > abs(rad - pi * 0.5) >= 0:
@@ -828,15 +804,6 @@ class Moonphase:
                 a = str()
             return a
 
-        def moonphase(day, mon, yr):
-            #g = Gregorian(yr, mon, day).to_hijri()
-            #_, _, d = g.datetuple()
-            #mooncycle = 29.55
-            mooncycle = 27.99
-            #a = d / mooncycle
-            a = moon.phase(date(yr, mon, day)) / mooncycle
-            return a
-
         def calc_ramadhan(day, mon, yr):
             g = Gregorian(yr, mon, day).to_hijri()
             if g.month_name() == 'Ramadhan':
@@ -845,23 +812,30 @@ class Moonphase:
                 a = str()
             return a
             
+        def calc_moon(self, val, m, rad, flag1, flag2, flag3):
+            ra1 = self.r
+            ra2 = cos(rad) * self.r
+            ra3 = self.r
+            px1 = cos(pi * val + m) * self.r + self.rx
+            py1 = sin(pi * val + m) * self.r + self.ry
+            px2 = cos(pi * val + m) * self.r + self.rx
+            py2 = -sin(pi * val + m) * self.r + self.ry
+            dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 {flag3} {px1} {py1}z'
+            ps = phase(rad)
+            ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+            return dm, ps, ram
+            
         cairo_fix = True
-        val = moonphase(self.day, self.mon, self.yr) # Astral v3.0 module: 0 <= val <= 1 
-        rad = val * pi * 2 if val < 1 else pi * 2  
-        ra1 = self.r
-        ra2 = cos(rad) * self.r
-        ra3 = self.r
+        #mooncycle = 29.55
+        mooncycle = 27.99
+        v = moon.phase(date(self.yr, self.mon, self.day)) / mooncycle # Astral v3.0 module: 0 <= v <= 1
+        rad = v * pi * 2 if v < 1 else pi * 2
         if self.lat > 0: # northern hemisphere
             if pi * 0.5 > rad >= 0:  # new moon to first quarter
                 m = (pi * 0.5 - rad) / (pi * 0.5)
-                flag1, flag2 = (1, 0) if self.darkmode == True else (0, 1)
-                px1 = cos(pi * 0.5 + m) * self.r + self.rx
-                py1 = sin(pi * 0.5 + m) * self.r + self.ry
-                px2 = cos(pi * 0.5 + m) * self.r + self.rx
-                py2 = -sin(pi * 0.5 + m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 1 {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                flag1, flag2, flag3 = (1, 0, 1) if self.darkmode == True else (0, 1, 1)
+                val = 0.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             elif pi > rad >= pi * 0.5:  # first quarter to full moon
                 if cairo_fix == True:
                     m = 0
@@ -869,13 +843,8 @@ class Moonphase:
                 else:
                     m = (rad - pi * 0.5) / (pi * 0.5)
                     flag1, flag2, flag3 = (0, 0, 0) if self.darkmode == True else (1, 1, 0)
-                px1 = cos(pi * 0.5 - m) * self.r + self.rx
-                py1 = sin(pi * 0.5 - m) * self.r + self.ry
-                px2 = cos(pi * 0.5 - m) * self.r + self.rx
-                py2 = -sin(pi * 0.5 - m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 {flag3} {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                val = 0.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             elif pi * 1.5 > rad >= pi:  # full moon to third quarter
                 if cairo_fix == True:
                     m = 0
@@ -883,34 +852,19 @@ class Moonphase:
                 else:
                     m = (pi * 1.5 - rad) / (pi * 0.5)
                     flag1, flag2, flag3 = (0, 0, 0) if self.darkmode == True else (1, 1, 0)
-                px1 = cos(pi * 1.5 - m) * self.r + self.rx
-                py1 = sin(pi * 1.5 - m) * self.r + self.ry
-                px2 = cos(pi * 1.5 - m) * self.r + self.rx
-                py2 = -sin(pi * 1.5 - m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 {flag3} {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                val = 1.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             else:  # third quarter to new moon
                 m = (rad - pi * 1.5) / (pi * 0.5)
-                flag1, flag2 = (1, 0) if self.darkmode == True else (0, 1)
-                px1 = cos(pi * 1.5 + m) * self.r + self.rx
-                py1 = sin(pi * 1.5 + m) * self.r + self.ry
-                px2 = cos(pi * 1.5 + m) * self.r + self.rx
-                py2 = -sin(pi * 1.5 + m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 1 {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                flag1, flag2, flag3 = (1, 0, 1) if self.darkmode == True else (0, 1, 1)
+                val = 1.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
         else: #southern hemisphere
             if pi * 0.5 > rad >= 0:  # new moon to first quarter
                 m = (pi * 0.5 - rad) / (pi * 0.5)
-                flag1, flag2 = (1, 0) if self.darkmode == True else (0, 1)
-                px1 = cos(pi * 1.5 + m) * self.r + self.rx
-                py1 = sin(pi * 1.5 + m) * self.r + self.ry
-                px2 = cos(pi * 1.5 + m) * self.r + self.rx
-                py2 = -sin(pi * 1.5 + m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 1 {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                flag1, flag2, flag3 = (1, 0, 1) if self.darkmode == True else (0, 1, 1)
+                val = 1.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             elif pi > rad >= pi * 0.5:  # first quarter to full moon
                 if cairo_fix == True:
                     m = 0
@@ -918,13 +872,8 @@ class Moonphase:
                 else:
                     m = (rad - pi * 0.5) / (pi * 0.5)
                     flag1, flag2, flag3 = (0, 0, 0) if self.darkmode == True else (1, 1, 0)
-                px1 = cos(pi * 1.5 - m) * self.r + self.rx
-                py1 = sin(pi * 1.5 - m) * self.r + self.ry
-                px2 = cos(pi * 1.5 - m) * self.r + self.rx
-                py2 = -sin(pi * 1.5 - m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 {flag3} {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                val = 1.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             elif pi * 1.5 > rad >= pi:  # full moon to third quarter
                 if cairo_fix == True:
                     m = 0
@@ -932,23 +881,13 @@ class Moonphase:
                 else:
                     m = (pi * 1.5 - rad) / (pi * 0.5)
                     flag1, flag2, flag3 = (0, 0, 0) if self.darkmode == True else (1, 1, 0)
-                px1 = cos(pi * 0.5 - m) * self.r + self.rx
-                py1 = sin(pi * 0.5 - m) * self.r + self.ry
-                px2 = cos(pi * 0.5 - m) * self.r + self.rx
-                py2 = -sin(pi * 0.5 - m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 {flag3} {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                val = 0.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
             else:  # third quarter to new moon
                 m = (rad - pi * 1.5) / (pi * 0.5)
-                flag1, flag2 = (1, 0) if self.darkmode == True else (0, 1)
-                px1 = cos(pi * 0.5 + m) * self.r + self.rx
-                py1 = sin(pi * 0.5 + m) * self.r + self.ry
-                px2 = cos(pi * 0.5 + m) * self.r + self.rx
-                py2 = -sin(pi * 0.5 + m) * self.r + self.ry
-                dm = f'M{px1} {py1} A{ra1} {ra1} 0 {flag1} {flag2} {px2} {py2} {ra2*0.98} {ra3*0.98} 0 1 1 {px1} {py1}z'
-                ps = phase(rad)
-                ram = calc_ramadhan(self.day, self.mon, self.yr) if self.ramadhan == True else str()
+                flag1, flag2, flag3 = (1, 0, 1) if self.darkmode == True else (0, 1, 1)
+                val = 0.5
+                dm, ps, ram = calc_moon(self, val, m, rad, flag1, flag2, flag3)
         return dm, ps, ram
 
 def addIcon(s):

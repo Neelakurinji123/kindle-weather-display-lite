@@ -28,7 +28,7 @@ class fontfamily:
   
 # Reguler font
 class text:
-    def __init__(self, anchor, fontsize, x, y, v, stroke=None):
+    def __init__(self, anchor, fontsize, x=0, y=0, v=str(), stroke=None):
         self.anchor = anchor
         self.fontsize = fontsize
         self.x = x
