@@ -120,7 +120,7 @@ class Maintenant:
             except Exception as e:
                 sunset = '--:--'
         # localtime
-        maintenant = (str.lower(timestamp(self.p.now, self.p.tz).strftime('%A, %d %B %-H:%M')))
+        maintenant = (str.lower(timestamp(self.p.now, self.p.tz).strftime('%A, %-d %B %-H:%M')))
         w = maintenant.split()
         #d = read_i18n(self.p)
         #w[0] = d["abbreviated_weekday"][w[0][:-1]] + ',' if not d == dict() else w[0]
