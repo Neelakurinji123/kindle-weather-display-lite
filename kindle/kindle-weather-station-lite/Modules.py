@@ -687,6 +687,7 @@ class GraphPane:
             i, s = str(), str()
             c_weather = self.p.CurrentWeather()
             day_state = c_weather['daytime']
+            days = len(range(self.start, self.end, self.step))
             for n in range(self.start, self.end, self.step):
                 try:
                     weather = self.p.DailyForecast(n)
@@ -699,13 +700,17 @@ class GraphPane:
                     weather['main'] = re.sub('Day', 'Night', weather['main'])
                 elif (day_state == 'midnight_sun' or day_state == 'day') and re.search('Night', weather['main']):
                     weather['main'] = re.sub('Night', 'Day', weather['main'])
+                # weather icon
                 _x = int(sp_x + (box_size_x + self.grid) * (n - self.start))
                 _y = self.y + 90
-                i += transform(f'(1.8,0,0,1.8,{(_x - 10)},{(_y - 180)})', addIcon(weather['main'])).svg()
+                add_x = 15 if days == 4 else 0
+                i += transform(f'(1.8,0,0,1.8,{(_x - 10 + add_x)},{(_y - 180)})', addIcon(weather['main'])).svg()
+                # min & max temps
                 s += text(anchor='end', fontsize='30', x=(_x + half - 20), y=_y, v=round(weather['temp_min']), stroke='rgb(128,128,128)').svg()
                 s += circle((_x + half - 14), (_y - 20), 3, 'rgb(128,128,128)', 2, 'none').svg()
                 s += text('end', '30', (_x + half + 45), _y, round(weather['temp_max'])).svg()
                 s += circle((_x + half + 51), (_y - 20), 3, 'black', 2, 'none').svg()
+                # grid
                 if n < (self.end - 1):
                     i += line((_x + box_size_x), (_x + box_size_x), (_y - self.canvas_h + 55 - self.grid_ext_upper), (_y + 5), self.style_grid).svg()
             return s,i

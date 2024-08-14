@@ -7,8 +7,7 @@ This program is for a weather display on old Kindle 3 and Paperwhite 1 based on 
 Following API is available:
 
 - [Tomorrow.io](https://www.tomorrow.io/) (Free Tier)
-  - Hourly forecast for 120 hours
-  - Daily forecast for 6 days
+  - hourly & daily for next 5 days
  
 ## Screenshots
 
@@ -144,8 +143,9 @@ The program's layout is as follows:
 | maintenant        | Time information           | 40            |
 | main              | Current and hourly weather | 480           |
 | graph             | Graph  or tile             | 120           |
-| daily_xlabel      | Label on daily weather     | 20            |
-| hourly_xlabel     | Label on hourly weather    | 20            |
+| daily_xlabel_landscape4 | Label on daily weather from next day  | 20            |
+| daily_xlabel_landscape5_start0 | Label on hourly weather from today | 20        |
+| hourly_xlabel_landscape_start0 | Label on hourly weather from today | 20    |
 | padding[-+0-9]*   | Insert spaces (Y axis only)|               |
 
 
@@ -188,14 +188,14 @@ The program's layout is as follows:
 Available options are as follows:
 
 - config: "graph\_objects"
-  - "daily\_temperature": Daily Temperature
-  - "daily\_rain\_precipitation": Daily Rain Precipitation
-  - "daily\_snow\_accumulation": Daily Snow Accumulation
-  - "daily\_weather": Daily Weather
-  - "hourly\_temperature": Hourly Temperature
+  - "daily\_temperature\_spline\_landscape5": Daily Temperature
+  - "daily\_rain\_precipitation\_5cols": Daily Rain Precipitation
+  - "daily\_snow\_accumulation\_5cols": Daily Snow Accumulation
+  - "daily\_weather\_landscape4": Daily Weather
+  - "hourly\_temperature\_spline\_landscape": Hourly Temperature
   - "hourly\_rain\_precipitation": Hourly Rain Precipitation
   - "hourly\_snow\_accumulation": Hourly Snow Accumulation 
-  - "moon\_phase": Moon Phase
+  - "moon\_phase\_landscape5": Moon Phase
 
 
 
@@ -204,42 +204,42 @@ Available options are as follows:
 <kbd><img src="sample_screenshots/readme_imgs/KindleStation_spline.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": ["daily\_temperature\_spline\_landscape"]
+  - "graph\_objects": ["daily\_temperature\_spline\_landscape5"]
 
     
 
-#### 3.3 Moon Phase
+#### 3.2 Moon Phase
 
 <kbd><img src="sample_screenshots/readme_imgs/moonohase.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": [ "moon\_phase\_landscape"]
+  - "graph\_objects": [ "moon\_phase\_landscape5"]
   - "ramadhan": "True"
 
-#### 3.4 Hourly Precipitation
+#### 3.3 Hourly Precipitation
 
 <kbd><img src="sample_screenshots/readme_imgs/hourly_rain.png" /></kbd>&nbsp;
 
 - config
   - "graph\_objects": [ "hourly\_precipitation"]
 
-#### 3.5 daily Precipitation
+#### 3.4 daily Precipitation
 
 <kbd><img src="sample_screenshots/readme_imgs/daily_rain.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": [ "daily\_rain\_precipitation\_6cols"]
+  - "graph\_objects": [ "daily\_rain\_precipitation\_5cols"]
 
   
-#### 3.6 daily weather
+#### 3.5 daily weather
 
 <kbd><img src="sample_screenshots/readme_imgs/weather_tile.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": [ "daily\_weather\_landscape"]
+  - "graph\_objects": [ "daily\_weather\_landscape4"]
 
 
-#### 3.7 hourly snow accumulation
+#### 3.6 hourly snow accumulation
 
 <kbd><img src="sample_screenshots/readme_imgs/hourly_snow.png" /></kbd>&nbsp;
 
@@ -252,14 +252,14 @@ Available options are as follows:
 <kbd><img src="sample_screenshots/readme_imgs/daily_snow.png" /></kbd>&nbsp;
 
 - config
-  - "graph\_objects": [ "daily\_snow\_accumulation\_6cols"]
+  - "graph\_objects": [ "daily\_snow\_accumulation\_5cols"]
 
     
 ## Setting up time schedule
 
 Edit crontab and restart cron.
 
-e.g.)
+e.g. for pw1)
 
 `/etc/crontab/root`
 

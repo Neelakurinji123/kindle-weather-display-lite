@@ -8,9 +8,6 @@
 						"axis_color": "rgb(0,0,0)", "grid": 0, "grid_color": "rgb(0,0,0)", "grid_ext_upper": 0, "grid_ext_lower": 0}
 		},
 		"objects": {
-			"hourly_temperature_landscape": {"title": "temperature", "start": 0, "end": 25, "step": 1, "basis": "hour",
-						"type": "line", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
-						"stroke-linecap": "round"},
 			"hourly_temperature_spline_landscape": {"title": "temperature", "start": 0, "end": 25, "step": 1, "basis": "hour",
 						"type": "spline", "stroke": 8, "stroke-color": "rgb(105,105,105)", "fill": "rgb(220,220,220)",
 						"stroke-linecap": "round"},
@@ -20,6 +17,12 @@
 			"hourly_snow_accumulation": {"title": "snow accumulation", "start": 0, "end": 25, "step": 1, "basis": "hour",
 						"type": "rect", "stroke": 1, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
 						"stroke-linecap": "butt", "width": 15},
+			"daily_rain_precipitation_5cols": {"title": "rain precipitation", "start": 0, "end": 5, "step": 1, "basis": "day",
+						"type": "bar", "stroke": 25, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt"},
+			"daily_snow_accumulation_5cols": {"title": "snow accumulation", "start": 0, "end": 5, "step": 1, "basis": "day",
+						"type": "rect", "stroke": 1, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
+						"stroke-linecap": "butt", "width": 40},
 			"daily_rain_precipitation_6cols": {"title": "rain precipitation", "start": 0, "end": 6, "step": 1, "basis": "day",
 						"type": "bar", "stroke": 25, "stroke-color": "rgb(105,105,105)", "fill": "rgb(245,245,245)",
 						"stroke-linecap": "butt"},

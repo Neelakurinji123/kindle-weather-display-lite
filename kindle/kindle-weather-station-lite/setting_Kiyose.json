@@ -4,7 +4,7 @@
         "timezone": "Asia/Tokyo",
         "encoding": "utf-8",
         "locale": "ja_JP.UTF-8",
-        "font": "Hiragino Sans",
+        "font": "Hiragino Maru Gothic ProN",
         "darkmode": false,
 		"api": "Tomorrow.io",
 		"lat": 35.7853,
@@ -12,8 +12,8 @@
         "units": "metric",
         "lang": "ja",
 		"in_clouds": "probability",
-		"layout": ["maintenant", "main", "daily_xlabel_landscape", "padding+10", "graph"],
-		"graph_objects": ["daily_weather_landscape"],
+		"layout": ["maintenant", "main", "daily_xlabel_landscape4", "padding+10", "graph"],
+		"graph_objects": ["daily_weather_landscape4"],
 		"graph_canvas": "default_landscape",		
         "ramadhan": false
     }

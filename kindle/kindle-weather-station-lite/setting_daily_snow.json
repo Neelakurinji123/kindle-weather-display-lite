@@ -13,8 +13,8 @@
         "lang": "en",
 		"in_clouds": "probability",
         "ramadhan": true,
-		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape_start0"],
-		"graph_objects": ["daily_snow_accumulation_6cols"],
+		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape5_start0"],
+		"graph_objects": ["daily_snow_accumulation_5cols"],
 		"graph_canvas": "default_landscape"
     }
 }

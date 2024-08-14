@@ -13,8 +13,8 @@
 		"lang": "en",
 		"in_clouds": "probability",
 		"ramadhan": true,
-		"layout": ["maintenant", "main", "daily_xlabel_landscape_start0", "padding+10", "graph"],
-		"graph_objects": ["moon_phase_landscape"],
+		"layout": ["maintenant", "main", "daily_xlabel_landscape5_start0", "padding+10", "graph"],
+		"graph_objects": ["moon_phase_landscape5"],
 		"graph_canvas": "default_landscape"		
 	}
 }

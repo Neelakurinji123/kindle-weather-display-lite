@@ -13,8 +13,8 @@
 		"lang": "en",
 		"in_clouds": "probability",
 		"ramadhan": true,
-		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape_start0"],
-		"graph_objects": ["daily_rain_precipitation_6cols"],
-		"graph_canvas": "default_landscape_noGrid_sp20"		
+		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape5_start0"],
+		"graph_objects": ["daily_rain_precipitation_5cols"],
+		"graph_canvas": "default_landscape_noGrid_sp20"	
 	}
 }
