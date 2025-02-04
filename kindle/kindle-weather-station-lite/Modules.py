@@ -179,7 +179,7 @@ class CurrentData:
                         y_main = self.y_main + 222
                     else:
                         font_size = '40'
-                        x_main = self.x_main + 165
+                        x_main = self.x_main + 170
                         y_main = self.y_main + 207
 
                     a += text('end', font_size, (x_main - padding), y_main, v).svg()

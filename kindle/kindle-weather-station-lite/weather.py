@@ -31,6 +31,10 @@ error_image = "./img/error_service_unavailable.png"
 i18n_config = "./config/i18n.json"
 graph_config = './config/graph_config.json'
 
+# Imagemagik ENV
+#os.getenv("MAGICK_HOME", "/mnt/us/python3")
+#os.getenv("WAND_MAGICK_LIBRARY_SUFFIX", "-6.Q8")
+
 def svg_processing(p, text=str(), draw=str(), y=0):
     graph_objects = p.config['graph_objects']
     for s in p.config['layout']:
@@ -88,7 +92,71 @@ def img_processing(p, svg):
         img.save(filename=flatten_pngfile)
     img.close()
 
-def main(config, flag_dump, flag_config, flag_svg, flag_png):
+def main():
+    flag_dump, flag_config, flag_svg, flag_png = False, False, False, False
+    if 'dump' in sys.argv:
+        flag_dump = True
+        sys.argv.remove('dump')
+    elif 'config' in sys.argv:
+        flag_config = True
+        sys.argv.remove('config')
+    elif 'svg' in sys.argv:
+        flag_svg = True
+        sys.argv.remove('svg')
+    elif 'png' in sys.argv:
+        flag_png = True
+        sys.argv.remove('png')
+
+    # Use custom setting
+    if len(sys.argv) > 1:
+        setting = sys.argv[1]
+    else:
+        setting = "setting.json" # Default setting
+
+    with open(setting, 'r') as f:
+        service = json.load(f)['station']
+    f.close()
+
+    config = dict()
+    config['city'] = service['city'] if 'city' in service else None
+    config['timezone'] = service['timezone'] if 'timezone' in service else None
+    config['locale'] = service['locale'] if 'locale' in service else 'en_US.UTF-8'
+    config['encoding'] = service['encoding'] if 'encoding' in service else 'iso-8859-1'
+    config['font'] = service['font'] if 'font' in service else 'Droid Sans'
+    config['darkmode'] = service['darkmode'] if 'darkmode' in service else False
+    config['api'] = service['api']
+    config['lat'] = str(service['lat'])
+    config['lon'] = str(service['lon'])
+    config['units'] = service['units'] if 'units' in service else 'metric'
+    config['lang'] = service['lang'] if 'lang' in service else 'en'
+    config['in_clouds'] = service['in_clouds'] if 'in_clouds' in service else str()  # Options: "cloudCover", "probability"
+    config['layout'] = service['layout']
+    config['w'], config['h'] = 800, 600
+    config['ramadhan'] = service['ramadhan']
+    config['i18n_file'] = i18n_config
+
+    with open(graph_config, 'r') as f:
+        graph = json.load(f)['graph']
+    f.close()
+
+    config['graph_lines'] = graph['lines']
+    config['graph_labels'] = graph['labels']
+    b = list(service['graph_objects']) if 'graph_objects' in service else None
+    if not b == None:
+        config['graph_canvas'] = graph['canvas'][service['graph_canvas']]
+        config['graph_objects'] = list()
+        for n in b:
+            config['graph_objects'].append(graph['objects'][n])
+    else:
+        config['graph_canvas'] = dict()
+        config['graph_objects'] = list()
+
+    # Kindle's display size
+    if os.uname().nodename == 'kindle':
+        if os.environ.get('KINDLE_VER') == 'k3':
+            config['kindle_h'], config['kindle_w'] = 600, 800
+        else:
+            config['kindle_h'], config['kindle_w'] = 768, 1024
 
     try:
         if config['api'] == 'Tomorrow.io':
@@ -151,79 +219,6 @@ def main(config, flag_dump, flag_config, flag_svg, flag_png):
         out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
 
 if __name__ == "__main__":
-    flag_dump, flag_config, flag_svg, flag_png = False, False, False, False
-    if 'dump' in sys.argv:
-        flag_dump = True
-        sys.argv.remove('dump')
-    elif 'config' in sys.argv:
-        flag_config = True
-        sys.argv.remove('config')
-    elif 'svg' in sys.argv:
-        flag_svg = True
-        sys.argv.remove('svg')
-    elif 'png' in sys.argv:
-        flag_png = True
-        sys.argv.remove('png')
 
-    # Use custom setting
-    if len(sys.argv) > 1:
-        setting = sys.argv[1]
-    else:
-        setting = "setting.json" # Default setting
-
-    with open(setting, 'r') as f:
-        service = json.load(f)['station']
-    f.close()
-
-    config = dict()
-    config['city'] = service['city'] if 'city' in service else None
-    config['timezone'] = service['timezone'] if 'timezone' in service else None
-    config['locale'] = service['locale'] if 'locale' in service else 'en_US.UTF-8'
-    config['encoding'] = service['encoding'] if 'encoding' in service else 'iso-8859-1'
-    config['font'] = service['font'] if 'font' in service else 'Droid Sans'
-    config['darkmode'] = service['darkmode'] if 'darkmode' in service else False
-    config['api'] = service['api']
-    config['lat'] = str(service['lat'])
-    config['lon'] = str(service['lon'])
-    config['units'] = service['units'] if 'units' in service else 'metric'
-    config['lang'] = service['lang'] if 'lang' in service else 'en'
-    config['in_clouds'] = service['in_clouds'] if 'in_clouds' in service else str()  # Options: "cloudCover", "probability"
-    config['layout'] = service['layout']
-    config['w'], config['h'] = 800, 600
-    config['ramadhan'] = service['ramadhan']
-    config['i18n_file'] = i18n_config
-
-    with open(graph_config, 'r') as f:
-        graph = json.load(f)['graph']
-    f.close()
-
-    config['graph_lines'] = graph['lines']
-    config['graph_labels'] = graph['labels']
-    b = list(service['graph_objects']) if 'graph_objects' in service else None
-    if not b == None:
-        config['graph_canvas'] = graph['canvas'][service['graph_canvas']]
-        config['graph_objects'] = list()
-        for n in b:
-            config['graph_objects'].append(graph['objects'][n])
-    else:
-        config['graph_canvas'] = dict()
-        config['graph_objects'] = list()
-
-    # get Kindle's display size
-    if os.uname().nodename == 'kindle':
-        try:
-            if 'KINDLE_H' in os.environ and 'KINDLE_W' in os.environ:
-                config['kindle_h'] = int(os.environ.get('KINDLE_H'))
-                config['kindle_w'] = int(os.environ.get('KINDLE_W'))
-            else:
-                config['kindle_h'], config['kindle_w'] = 600, 800
-        except:
-            with open("/sys/class/graphics/fb0/virtual_size", 'r') as f:
-                s = f.readline().strip()
-                config['kindle_h'], config['kindle_w'] = list(map(int, s.split(',')))
-    else:
-        config['kindle_h'], config['kindle_w'] = 600, 800
-
-    main(config, flag_dump, flag_config, flag_svg, flag_png)
-    
+    main()
 

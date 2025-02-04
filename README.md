@@ -63,13 +63,17 @@ To retrieve data correctly, setup NTP server.
 
 All set up finished, then try it.
 
-`. ./env_pw1; ./weather.py png` # use default config
+`. ./env; KINDLE_VER='pw1' ./weather.py png` # use default config
+
+Note: For Kndle 3, use KINDLE_VER='k3'
 
 or one of config files:
 
-`. ./env_pw1; ./weather.py setting_######.json png`
+`. ./env; KINDLE_VER='pw1' ./weather.py setting_######.json png`
 
-Take a look at `/tmp/KindleStation_flatten.png`.
+Note: For Kndle 3, use KINDLE_VER='k3'
+
+Look at `/tmp/KindleStation_flatten.png`.
 
 
 ### 7. USB network
@@ -84,10 +88,20 @@ PW1:
 		                                      [USB NETWORK]                                             
 ```
 
+K3:
+
+```
+                [LOCAL NETWORK]               			                                   [Wi-Fi]
+                e.g.(192.168.1.0/24).        192.168.1.XX/24(wifi)
+ WAN <-> ROUTER <--------------> PC <------> KINDLE
+                          192.168.2.1/24    192.168.2.2/24(fix)
+		                                      [USB NETWORK] 
+		                                      
 When usbnet setup was finished, enable sshd server in KUAL, access to Kindle. 
 
 ```
-ssh root@192.168.15.244
+ssh root@192.168.15.244 (PW1)
+ssh root@192.168.2.2 (K3)
 ```
 
 ### 8. Setup ssh Auth key (optional)
@@ -105,12 +119,14 @@ mkdir /root/.ssh
 cd /root/.ssh
 ln -s /etc/dropbear/dropbear_rsa_host_key id_dropbear
 cd -
-scp dropbear_rsa_host_key.pub root@192.168.2.2:/tmp
+scp dropbear_rsa_host_key.pub root@192.168.15.244:/tmp
 ssh root@192.168.15.244  # access to Kindle
 cat /tmp/dropbear_rsa_host_key.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
 ssh root@192.168.15.244  # test passwordless login
 ```
+
+Note: IP for K3 is '192.168.2.2'
 
 e.g.) openssh (openwrt)
 
@@ -119,20 +135,24 @@ cd /root/.ssh
 opkg update
 opkg install openssh-client openssh-keygen openssh-sftp-client
 ssh-keygen -t rsa
-scp id.pub root@192.168.2.2:/tmp
+scp id.pub root@192.168.15.244:/tmp
 ssh root@192.168.15.244  # access to Kindle
 cat /tmp/id.pub >> /mnt/us/usbnet/etc/authorized_keys
 exit
 ssh root@192.168.15.244  # test passwordless login
 ```
 
+Note: IP for K3 is '192.168.2.2'
+
 ### 9. Test run
 
 ```
 cd /mnt/us/kindle-weather-station-lite
-. ./env_pw1
-./weather.py [config file]
+. ./env
+KINDLE_VER='pw1' ./weather.py [config file]
 ```
+Note For K3, use KINDLE_VER='k3'
+
 
 ## Layout
 Layout size is 600 x 800.
@@ -162,7 +182,7 @@ The program's layout is as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/main_pane.png" /></kbd>&nbsp;
 
-- config
+- config (example)
   - "timezone": "Pacific/Auckland" # UNIX zoneinfo
   - "encoding": "iso-8859-1"  # encoding name
   - "locale": "en_US.UTF-8"  # locale name
@@ -188,14 +208,14 @@ The program's layout is as follows:
 Available options are as follows:
 
 - config: "graph\_objects"
-  - "daily\_temperature\_spline\_landscape5": Daily Temperature
-  - "daily\_rain\_precipitation\_5cols": Daily Rain Precipitation
-  - "daily\_snow\_accumulation\_5cols": Daily Snow Accumulation
-  - "daily\_weather\_landscape4": Daily Weather
-  - "hourly\_temperature\_spline\_landscape": Hourly Temperature
-  - "hourly\_rain\_precipitation": Hourly Rain Precipitation
-  - "hourly\_snow\_accumulation": Hourly Snow Accumulation 
-  - "moon\_phase\_landscape5": Moon Phase
+  - "daily\_temperature\_spline\_landscape5": Daily Temperature (5 days)
+  - "daily\_rain\_precipitation\_5cols": Daily Rain Precipitation (5 days)
+  - "daily\_snow\_accumulation\_5cols": Daily Snow Accumulation (5 days)
+  - "daily\_weather\_landscape4": Daily Weather (4 days)
+  - "hourly\_temperature\_spline\_landscape": Hourly Temperature (24 hrs)
+  - "hourly\_rain\_precipitation": Hourly Rain Precipitation (24 hrs)
+  - "hourly\_snow\_accumulation": Hourly Snow Accumulation (24 hrs)
+  - "moon\_phase\_landscape5": Moon Phase (5 days)
 
 
 
@@ -212,7 +232,7 @@ Available options are as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/moonohase.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "moon\_phase\_landscape5"]
   - "ramadhan": "True"
 
@@ -220,14 +240,14 @@ Available options are as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/hourly_rain.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "hourly\_precipitation"]
 
 #### 3.4 daily Precipitation
 
 <kbd><img src="sample_screenshots/readme_imgs/daily_rain.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "daily\_rain\_precipitation\_5cols"]
 
   
@@ -235,7 +255,7 @@ Available options are as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/weather_tile.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "daily\_weather\_landscape4"]
 
 
@@ -243,7 +263,7 @@ Available options are as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/hourly_snow.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "hourly\_snow\_accumulation"]
 
 
@@ -251,7 +271,7 @@ Available options are as follows:
 
 <kbd><img src="sample_screenshots/readme_imgs/daily_snow.png" /></kbd>&nbsp;
 
-- config
+- config  (example)
   - "graph\_objects": [ "daily\_snow\_accumulation\_5cols"]
 
     
@@ -259,13 +279,15 @@ Available options are as follows:
 
 Edit crontab and restart cron.
 
-e.g. for pw1)
+e.g. for PW1
 
 `/etc/crontab/root`
 
 ```
-0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env_pw1; ./weather.py 2>>/tmp/kindle-weather-station.err"
-0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env_pw1; ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
+
+0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env; KINDLE_VER='pw1' ./weather.py 2>>/tmp/kindle-weather-station.err"
+0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env; KINDLE_VER='pw1' ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
+
 ```
 
 restart cron
@@ -273,6 +295,28 @@ restart cron
 ```
 kill -HUP `pidof crond`
 ```
+
+e.g. for K3
+
+`/etc/crontab/root`
+
+```
+
+0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env; KINDLE_VER='k3' ./weather.py 2>>/tmp/kindle-weather-station.err"
+0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env; KINDLE_VER='k3' ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
+
+```
+
+restart cron
+
+```
+kill `pidof crond`
+/etc/init.d/crond start
+```
+
+## Disable sleep mode on PW1
+
+Enter ~ds in the search field.
 
 # Credits
 

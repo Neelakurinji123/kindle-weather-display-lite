@@ -1,3 +1,0 @@
-export MAGICK_HOME=/mnt/us/python3
-export WAND_MAGICK_LIBRARY_SUFFIX='-6.Q8'
-export KINDLE_VER='pw1'
