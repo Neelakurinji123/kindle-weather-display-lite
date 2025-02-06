@@ -81,16 +81,19 @@ Look at `/tmp/KindleStation_flatten.png`.
 PW1:
 
 ```
+
                 [LOCAL NETWORK]               			                                   [Wi-Fi]
                 e.g.(192.168.1.0/24).        192.168.1.XX/24(wifi)
  WAN <-> ROUTER <--------------> PC <------> KINDLE
                           192.168.15.1/24    192.168.15.244/24(fix)
 		                                      [USB NETWORK]                                             
+
 ```
 
 K3:
 
 ```
+
                 [LOCAL NETWORK]               			                                   [Wi-Fi]
                 e.g.(192.168.1.0/24).        192.168.1.XX/24(wifi)
  WAN <-> ROUTER <--------------> PC <------> KINDLE
@@ -100,9 +103,9 @@ K3:
 When usbnet setup was finished, enable sshd server in KUAL, access to Kindle. 
 
 ```
+
 ssh root@192.168.15.244 (PW1)
 ssh root@192.168.2.2 (K3)
-```
 
 ### 8. Setup ssh Auth key (optional)
 
