@@ -16,7 +16,7 @@ from subprocess import Popen, PIPE
 from wand.image import Image
 from wand.display import display
 from cairosvg import svg2png
-from Modules import Maintenant, CurrentWeatherPane, HourlyWeatherPane, GraphPane, GraphLabel, GraphLine
+from Modules import Maintenant, CurrentWeatherPane, HourlyWeatherPane, DailyWeatherPane, GraphPane, GraphLabel, GraphLine
 import SVGtools
 
 # Working dir
@@ -51,6 +51,16 @@ def svg_processing(p, text=str(), draw=str(), y=0):
             draw += a.icon()
             start_hour, span, step, pitch = 3, 9, 3, 155
             a = HourlyWeatherPane(p=p, y=y, hour=start_hour, span=span, step=step, pitch=pitch)
+            text += a.text()
+            draw += a.icon()
+            y += 340
+        elif s == 'main2':
+            wordwrap = 18
+            a = CurrentWeatherPane(p=p, y=y, wordwrap=wordwrap)
+            text += a.text()
+            draw += a.icon()
+            start_day, span, step, pitch = 1, 3, 1, 155
+            a = DailyWeatherPane(p=p, y=y, day=start_day, span=span, step=step, pitch=pitch)
             text += a.text()
             draw += a.icon()
             y += 340
@@ -157,6 +167,8 @@ def main():
             config['kindle_h'], config['kindle_w'] = 600, 800
         else:
             config['kindle_h'], config['kindle_w'] = 768, 1024
+    else:
+        config['kindle_h'], config['kindle_w'] = 600, 800
 
     try:
         if config['api'] == 'Tomorrow.io':

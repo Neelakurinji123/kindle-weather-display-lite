@@ -13,7 +13,7 @@
 		"lang": "en",
 		"in_clouds": "probability",
 		"ramadhan": true,
-		"layout": ["maintenant", "main", "padding+5", "graph", "padding+20", "daily_xlabel_landscape5_start0"],
+		"layout": ["maintenant", "main2", "padding+5", "graph", "padding+20", "daily_xlabel_landscape5_start0"],
 		"graph_objects": ["daily_temperature_spline_landscape5"],
 		"graph_canvas": "default_landscape"		
 	}

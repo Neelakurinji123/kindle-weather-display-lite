@@ -85,6 +85,9 @@ def add_unit_temp(units, x, y, font_size):
     elif font_size == 35:
         svg += circle((x + 5), (y - 23), 4, 'black', 2, 'none').svg()
         svg += text('start', '25', (x + 10), (y  - 10), units['temp']).svg()
+    elif font_size == 30:
+        svg += circle((x + 6), (y - 21), 3.5, 'black', 2, 'none').svg()
+        svg += text('start', '22', (x + 11), (y  - 9), units['temp']).svg()
     return svg
 
 class Maintenant:
@@ -338,7 +341,7 @@ class HourlyWeatherPane:
 
     def text(self):
         y = self.y
-        hrs = {3: 'three hours', 6: 'six hours', 9: 'nine hours'}
+        hrs = {3: 'three hrs', 6: 'six hrs'}
         d = read_i18n(self.p)
         a = str()
         # 3hr forecast
@@ -365,6 +368,65 @@ class HourlyWeatherPane:
         matrix = '2.0,0,0,2.0'
         for n in range(self.hour, self.span, self.step):
             weather = self.p.HourlyForecast(n)
+            daytime_state = weather['daytime']
+            # tweak weather icon
+            if daytime_state == 'polar_night' and re.search('Day', weather['main']):
+                weather['main'] = re.sub('Day', 'Night', weather['main'])
+            elif daytime_state == 'midnight_sun' and re.search('Night', weather['main']):
+                weather['main'] = re.sub('Night', 'Day', weather['main'])
+            i += transform(f'({matrix},{self.x},{y})', addIcon(weather['main'])).svg()
+            y += self.pitch
+        return i
+
+class DailyWeatherPane:
+    def __init__(self, p, y, day, span, step, pitch):
+        self.p = p
+        self.y = y - 30
+        self.x = 550
+        self.day = day
+        self.span = span
+        self.step = step
+        self.pitch = pitch
+        self.font = p.config['font']
+        self.in_clouds = p.config['in_clouds']
+
+    def text(self):
+        y = self.y
+        days = {1: 'tomorrow', 2: 'next tmrw'}
+        d = read_i18n(self.p)
+        a = str()
+        units = self.p.units
+        #units['temp'] = ''
+        style_line = 'stroke:black;stroke-width:1px;'
+        for i in range(self.day, self.span, self.step):
+            weather = self.p.DailyForecast(i)
+            # Max temp
+            a += text('end', '30', (self.x + 210), (y + 115-20), round(weather['temp_max'])).svg()
+            a += add_unit_temp(units=self.p.units, x=(self.x + 210), y=(y + 115-20), font_size=30)
+            # Min temp
+            a += text('end', '30', (self.x + 210), (y + 115+20), round(weather['temp_min'])).svg()
+            a += add_unit_temp(units=self.p.units, x=(self.x + 210), y=(y + 115+20), font_size=30)
+            a += text('start', '30', (self.x + 50), (y + 190), days[i]).svg()
+            # Line
+            a += line((self.x + 170), (self.x + 170+70), (y + 102), (y + 102), style_line).svg()
+            # 'in_clouds' options: cloudCover, probability
+            if not self.in_clouds == str():
+                if weather['main'] in ['Cloudy']:
+                    v = Decimal(weather['in_clouds']).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+                    if v == 0:
+                        a += text('end', '25', int(self.x + 160 - s_padding(v) * 0.357), (y + 112), '').svg()
+                    else:
+                        a += text('end', '25', int(self.x + 122 - s_padding(v) * 0.357), (y + 112), v).svg()
+            y += self.pitch
+        return fontfamily(font=self.font, _svg=a).svg()
+
+    def icon(self):
+        y = self.y
+        i = str()
+        c_weather = self.p.CurrentWeather()
+        matrix = '2.0,0,0,2.0'
+        for n in range(self.day, self.span, self.step):
+            weather = self.p.DailyForecast(n)
             daytime_state = weather['daytime']
             # tweak weather icon
             if daytime_state == 'polar_night' and re.search('Day', weather['main']):

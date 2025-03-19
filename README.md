@@ -162,6 +162,7 @@ The program's layout is as follows:
 |:------------------|:---------------------------|--------------:|
 | maintenant        | Time information           | 40            |
 | main              | Current and hourly weather | 480           |
+| main2             | Current and daily weather  | 480           |
 | graph             | Graph  or tile             | 120           |
 | daily_xlabel_landscape4 | Label on daily weather from next day  | 20            |
 | daily_xlabel_landscape5_start0 | Label on hourly weather from today | 20        |
@@ -178,9 +179,11 @@ The program's layout is as follows:
 - sunset
 - moonphase
 
-### 2. main
+### 2. main & main2
 
 <kbd><img src="sample_screenshots/readme_imgs/main_pane.png" /></kbd>&nbsp;
+
+<kbd><img src="sample_screenshots/readme_imgs/KindleStation_main2.png" /></kbd>&nbsp;
 
 - config (example)
   - "timezone": "Pacific/Auckland" # UNIX zoneinfo
