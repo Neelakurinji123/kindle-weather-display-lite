@@ -424,14 +424,14 @@ class DailyWeatherPane:
         y = self.y
         i = str()
         c_weather = self.p.CurrentWeather()
+        daytime_state = c_weather['daytime']
         matrix = '2.0,0,0,2.0'
         for n in range(self.day, self.span, self.step):
             weather = self.p.DailyForecast(n)
-            daytime_state = weather['daytime']
             # tweak weather icon
-            if daytime_state == 'polar_night' and re.search('Day', weather['main']):
+            if (daytime_state == 'polar_night' or daytime_state == 'night') and re.search('Day', weather['main']):
                 weather['main'] = re.sub('Day', 'Night', weather['main'])
-            elif daytime_state == 'midnight_sun' and re.search('Night', weather['main']):
+            elif (daytime_state == 'midnight_sun' or daytime_state == 'day') and re.search('Night', weather['main']):
                 weather['main'] = re.sub('Night', 'Day', weather['main'])
             i += transform(f'({matrix},{self.x},{y})', addIcon(weather['main'])).svg()
             y += self.pitch

@@ -161,7 +161,7 @@ Note For K3, use KINDLE_VER='k3'
 Layout size is 600 x 800.
 The program's layout is as follows:
 
-<<<<<<< HEAD
+
 | Module name       | Function                   | Size (Y-axis) |
 |:------------------|:---------------------------|--------------:|
 | maintenant        | Time information           | 40            |
@@ -172,17 +172,6 @@ The program's layout is as follows:
 | daily_xlabel_landscape5_start0 | Label on hourly weather from today | 20        |
 | hourly_xlabel_landscape_start0 | Label on hourly weather from today | 20    |
 | padding[-+0-9]*   | Insert spaces (Y axis only)|               |
-=======
-| Module name                    | Function                             | Size (Y-axis) |
-|:-------------------------------|:-------------------------------------|--------------:|
-| maintenant                     | Time information                     | 40            |
-| main                           | Current and hourly weather           | 480           |
-| graph                          | Graph  or tile                       | 120           |
-| daily_xlabel_landscape4        | Label on daily weather from next day | 20            |
-| daily_xlabel_landscape5_start0 | Label on hourly weather from today   | 20            |
-| hourly_xlabel_landscape_start0 | Label on hourly weather from today   | 20            |
-| padding[-+0-9]*                | Insert spaces (Y axis only)          |               |
->>>>>>> 8281a8986ea50e562574f1083b02ce5eae35bfcd
 
 
 ### 1. maintenant
