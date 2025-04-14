@@ -52,7 +52,7 @@ Default config is `setting.json`.
 - Wand
 - cairosvg
 - hijridate (optional, for moon\_phase module)
-
+- pip-system-certs (optional)
 
 
 ### 5. Network Time Synchronization
