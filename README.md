@@ -325,6 +325,17 @@ kill `pidof crond`
 
 Enter ~ds in the search field.
 
+## Troubleshooting
+
+- "CERTIFICATE_VERIFY_FAILED" error
+
+Edit "TomorrowIoAPI.py"
+
+```
+requests.request("GET", self.url, params=querystring, verify=False)
+```
+
+
 # Credits
 
 - [Tomorrow.io](https://www.tomorrow.io/) , Weather API
