@@ -27,7 +27,7 @@ os.chdir(path)
 svgfile = "/tmp/KindleStation.svg"
 pngfile = "/tmp/KindleStation.png"
 flatten_pngfile = "/tmp/KindleStation_flatten.png"
-error_image = "./img/error_service_unavailable.png"
+error_img = "./img/error_service_unavailable"
 i18n_config = "./config/i18n.json"
 graph_config = './config/graph_config.json'
 
@@ -170,6 +170,8 @@ def main():
     else:
         config['kindle_h'], config['kindle_w'] = 600, 800
 
+    error_image = error_img + '_' + str(config['kindle_h']) + 'x' + str(config['kindle_w']) + '.png'
+    
     try:
         if config['api'] == 'Tomorrow.io':
             from TomorrowIoAPI import TomorrowIo
@@ -179,6 +181,11 @@ def main():
             #    api_data = json.load(f)
 
             api_data = TomorrowIo(config=config).ApiCall()
+            
+            if api_data == dict():
+                shutil.copyfile(error_image, flatten_pngfile)
+                exit(1)
+            
             if not flag_dump == True:
                 p = TomorrowIo(config=config, api_data=api_data)
 

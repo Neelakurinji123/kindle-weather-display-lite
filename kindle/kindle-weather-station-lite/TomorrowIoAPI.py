@@ -131,7 +131,8 @@ class TomorrowIo:
                 t.sleep(1)
             else:
                 print('API: Requests call rejected.')
-                exit(1)    
+                #exit(1)
+                
         return api_data  
 
     def CurrentWeather(self):
