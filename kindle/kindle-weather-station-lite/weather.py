@@ -182,10 +182,6 @@ def main():
 
             api_data = TomorrowIo(config=config).ApiCall()
             
-            if api_data == dict():
-                shutil.copyfile(error_image, flatten_pngfile)
-                exit(1)
-            
             if not flag_dump == True:
                 p = TomorrowIo(config=config, api_data=api_data)
 
@@ -219,7 +215,6 @@ def main():
     except Exception as e:
         print(e)
         shutil.copyfile(error_image, flatten_pngfile)
-        exit(1)
 
     if flag_png == True:
         exit(0)
@@ -230,6 +225,9 @@ def main():
             cmd = './initialize_k3.sh'
         else:
             cmd = './initialize_pw1.sh'
+        
+        if api_data == dict():
+            shutil.copyfile(error_image, flatten_pngfile)
 
         out = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE).wait()
         cmd = '/usr/sbin/eips -c -f'
