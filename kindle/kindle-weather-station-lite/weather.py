@@ -214,7 +214,7 @@ def main():
 
     except Exception as e:
         print(e)
-        shutil.copyfile(error_image, flatten_pngfile)
+        api_data = dict()
 
     if flag_png == True:
         exit(0)
