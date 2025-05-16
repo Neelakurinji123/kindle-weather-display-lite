@@ -125,7 +125,8 @@ class TomorrowIo:
                 'timezone': self.tz,
                 "apikey":self.config['api_key']}
 
-            r = requests.request("GET", self.url, params=querystring)
+            #r = requests.request("GET", self.url, params=querystring)
+            r = requests.request("GET", self.url, params=querystring, verify=False)
             if  r.ok:
                 api_data[n] = r.json()
                 t.sleep(1)

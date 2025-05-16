@@ -63,13 +63,13 @@ To retrieve data correctly, setup NTP server.
 
 All set up finished, then try it.
 
-`. ./env; KINDLE_VER='pw1' ./weather.py png` # use default config
+`./weather.sh png` # use default config
 
 Note: For Kndle 3, use KINDLE_VER='k3'
 
 or one of config files:
 
-`. ./env; KINDLE_VER='pw1' ./weather.py setting_######.json png`
+`./weather.sh setting_######.json png`
 
 Note: For Kndle 3, use KINDLE_VER='k3'
 
@@ -151,8 +151,7 @@ Note: IP for K3 is '192.168.2.2'
 
 ```
 cd /mnt/us/kindle-weather-station-lite
-. ./env
-KINDLE_VER='pw1' ./weather.py [config file]
+./weather.sh [config file]
 ```
 Note For K3, use KINDLE_VER='k3'
 
@@ -286,35 +285,24 @@ Available options are as follows:
 
 Edit crontab and restart cron.
 
-e.g. for PW1
+e.g. for PW1 & K3
 
 `/etc/crontab/root`
 
 ```
 
-0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env; KINDLE_VER='pw1' ./weather.py 2>>/tmp/kindle-weather-station.err"
-0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env; KINDLE_VER='pw1' ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
+0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; ./weather.sh 2>>/tmp/kindle-weather-station.err"
+0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; ./weather.sh ./setting_daily_temperature.json 2>>/tmp/kindle-weather-station.err"
 
 ```
 
-restart cron
+restart cron for PW1
 
 ```
 kill -HUP `pidof crond`
 ```
 
-e.g. for K3
-
-`/etc/crontab/root`
-
-```
-
-0 */2 * * * sh -c "cd /mnt/us/kindle-weather-station-lite; . ./env; KINDLE_VER='k3' ./weather.py 2>>/tmp/kindle-weather-station.err"
-0 1,3,5,7,9,11,13,15,17,19,21,23 * * * sh -c "cd /mnt/us/weather-station-lite; . ./env; KINDLE_VER='k3' ./kindle-weather.py 2>>/tmp/kindle-weather-station.err"
-
-```
-
-restart cron
+restart cron for K3
 
 ```
 kill `pidof crond`
